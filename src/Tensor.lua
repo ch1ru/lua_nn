@@ -1,7 +1,3 @@
---Example tensor inputs and weights
-local X = {{1,2,3,2.5},{2,5,-1,2},{-1.5,2.7,3.3,-0.8}}
-local w = {{0.2,0.5,-0.26}, {0.8,-0.91,-0.27}, {-0.5,0.26,0.17},{1,-0.5,0.87}}
-
 Tensor = {}
 
 -- Derived class method new
@@ -10,14 +6,14 @@ function Tensor:new (o, tensor)
    setmetatable(o, self)
    self.__index = self
    self.__mul = function (m1, m2) return Tensor:MatMul(m1, m2) end
-   self.__add = function (m1, m2) return Tensor:MatAdd(m1, m2) end
+   self.__add = function (m, b) return Tensor:AddScalar(m, b) end
    self.tensor = tensor
    return o
 end
 
 --Matrix multiplication
 function Tensor:MatMul( m1, m2 )
-   if #m1[1] ~= #m2 then       -- inner matrix-dimensions must agree
+   if #m1[1] ~= #m2 then       --inner matrix-dimensions must agree
        return nil      
    end 
 
@@ -33,13 +29,28 @@ function Tensor:MatMul( m1, m2 )
        end
    end
    
-   res = Tensor:new(nil, res)
-   return res
+   return Tensor:new(nil, res)
 end
 
---Matrix addition
-function Tensor:MatAdd(m1, m2)
-    return nil
+--Scalar addition
+function Tensor:AddScalar(m, b)
+    --swap if in a different order
+    if #b ~= 1 and #m == 1 then
+        m, b = b, m    
+    elseif (#b ~= 1) ~= (#m ~= 1) then --at least one (but not both) needs to be 1D matrix
+        --throw error
+    end 
+
+    local res = {}
+    --cycle outer dimention
+    for i = 1, #m do
+        res[i] = {}
+        --cycle inner dimension
+        for j = 1, #m[i] do
+            res[i][j] = m[i][j] + b[1][j]
+        end
+    end
+    return Tensor:new(nil, res)
 end
 
 --Displays the tensor
@@ -59,5 +70,10 @@ function Tensor:Transpose()
     return nil
 end
 
+--Example tensor inputs and weights
+local X = {{1,2,3,2.5},{2,5,-1,2},{-1.5,2.7,3.3,-0.8}}
+local w = {{0.2,0.5,-0.26}, {0.8,-0.91,-0.27}, {-0.5,0.26,0.17},{1,-0.5,0.87}}
+local b = {{2, 3, 0.5}}
+
 local out = Tensor:new(X) * Tensor:new(w)
-print(out)
+print(out.tensor + Tensor:new(b))
