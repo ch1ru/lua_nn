@@ -1,10 +1,10 @@
 require('BasicTensor.lua')
 
-Tensor = {}
+Neuron = {}
 
 -- Derived class method new
 
-function Neuron:new (o, input, output, bias)
+function Neuron:new (o, input_features, bias)
    o = o or {}
    setmetatable(o, self)
    self.__index = self
