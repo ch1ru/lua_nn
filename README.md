@@ -1,2 +1,2 @@
-# lua_nn
+# nn.lua
 A Simple neural network library in lua
