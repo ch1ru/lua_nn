@@ -1,4 +1,4 @@
-require('Tensor.lua')
+require('Tensor')
 
 NeuronLayer = {}
 
