@@ -44,7 +44,7 @@ function Tensor:AddScalar(m, b)
     end 
 
     local res = {}
-    --cycle outer dimention
+    --cycle outer dimension
     for i = 1, #m do
         res[i] = {}
         --cycle inner dimension
@@ -84,9 +84,34 @@ function Tensor:__tostring()
     return str
 end
 
+--Converts a tensor of any dimension into a single dimension
+function ConvertTo1D(tensor)
+    local newTable = {}
+    for _, v in ipairs(tensor) do
+        if type(v) == 'table' then
+            local v = ConvertTo1D(v)
+            for _, w in ipairs(v) do
+                table.insert(newTable, w)
+            end
+        else
+            table.insert(newTable, v)
+        end
+    end
+    return newTable
+end
+
+
+
 --Transpose matrix
-function Tensor:Transpose()
-    return nil
+function Tensor:Transpose(newShape)
+    local originalTensor = self.tensor
+    local singleTensor = ConvertTo1D(originalTensor)
+    local newTensor = singleTensor
+    
+    for i = #newShape, 2, -1 do
+        newTensor = table.explode(newTensor, newShape[i])
+    end
+    return Tensor:new(nil, newTensor)
 end
 
 
@@ -96,8 +121,20 @@ local w = {{0.2,0.5,-0.26}, {0.8,-0.91,-0.27}, {-0.5,0.26,0.17},{1,-0.5,0.87}}
 local b = {{2, 3, 0.5}}
 
 local out = Tensor:new(X) * Tensor:new(w)
-print(out.tensor + Tensor:new(b))
+print("Original Tensor")
+local x = Tensor:new(nil, X)
+print(x)
+print("shape")
+print(tprint(x:Shape()))
+print()
+--print(out.tensor + Tensor:new(b))
 
-local btensor = Tensor:new(nil, b)
-tprint(btensor:Shape())
+--local btensor = Tensor:new(nil, b)
+--tprint(btensor:Shape())
+print()
+print("new Tensor")
+local xt = x:Transpose({4, 3})
+print(xt)
+print("new shape")
+print(tprint(xt:Shape()))
 

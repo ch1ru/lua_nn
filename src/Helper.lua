@@ -4,9 +4,9 @@ function tprint (tbl, index)
     indent = indent + 2 
     for k, v in pairs(tbl) do
       toprint = toprint .. string.rep(" ", indent)
-      if (type(k) == "number" and index) then
+      if (type(k) == "number" and index == true) then
         toprint = toprint .. "[" .. k .. "] = "
-      elseif (type(k) == "string" and index) then
+      elseif (type(k) == "string" and index == true) then
         toprint = toprint  .. k ..  "= "   
       end
       if (type(v) == "number") then
@@ -20,5 +20,30 @@ function tprint (tbl, index)
       end
     end
     toprint = toprint .. string.rep(" ", indent-2) .. "}"
-    print(toprint)
+    return toprint
+end
+
+function table.slice(tbl, first, last, step)
+  local sliced = {}
+
+  for i = first or 1, last or #tbl, step or 1 do
+    sliced[#sliced+1] = tbl[i]
+  end
+
+  return sliced
+end
+
+function table.explode(tbl, groups)
+  local pointer = 1
+  local pointerEnd = #tbl
+  local finalTable = {}
+  while pointer <= pointerEnd do
+    local currTable = {}
+    for i = 1, groups do
+      table.insert(currTable, tbl[pointer])
+      pointer = pointer + 1
+    end
+    table.insert(finalTable, currTable)
+  end
+  return finalTable
 end
