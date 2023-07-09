@@ -8,8 +8,10 @@ function Tensor:new (o, tensor)
    setmetatable(o, self)
    self.__index = self
    o.tensor = tensor
-   self.__mul = function (a,b) return Tensor:MatMul(a.tensor, b.tensor) end
-   self.__add = function (a, b) return Tensor:AddScalar(a.tensor, b.tensor) end
+   self.__mul = function (m1, m2) return Tensor:MatMul(m1.tensor, m2.tensor) end
+   self.__add = function (m1, b) return Tensor:AddScalar(m1.tensor, b.tensor) end
+   self.__sub = function (m1, m2) return Tensor:MatSub(m1.tensor, m2.tensor) end
+   self.__div = function (m1, m2) return Tensor:MatDiv(m1.tensor, m2.tensor) end
    return o
 end
 
@@ -62,26 +64,16 @@ end
 
 function Tensor:MatSub(m1, m2)
 
-    print(m1)
-    print(m2)
-
-    if m1:Shape() ~= m2:Shape() then
-        --return error
+    local res = {}
+    --cycle outer dimension
+    for i = 1, #m1 do
+        res[i] = {}
+        --cycle inner dimension
+        for j = 1, #m2 do
+            res[i][j] = m1[i][j] - m2[1][j]
+        end
     end
-
-    local shape = m1:Shape()
-    local singleTable = {}
-
-    local m1SingleDim = ConvertTo1D(m1.tensor)
-    local m2SingleDim = ConvertTo1D(m2.tensor)
-
-    
-
-    for i = 1, #m1SingleDim do
-        table.insert(singleTable, m1SingleDim[i] - m2SingleDim[i])
-    end
-
-    return Tensor:new(nil, ResizeTable(singleTable, shape))
+    return Tensor:new(nil, res)
 end
 
 --Return size (TODO: allow for rugged tensors)
@@ -207,13 +199,14 @@ local X = {{1,2,3,2.5},{2,5,-1,2},{-1.5,2.7,3.3,-0.8}}
 local w = {{0.2,0.5,-0.26}, {0.8,-0.91,-0.27}, {-0.5,0.26,0.17},{1,-0.5,0.87}}
 local b = {{2, 3, 0.5}}
 
-local Xtensor = Tensor:new(nil, X)
-local wtensor = Tensor:new(nil, w)
-local btensor = Tensor:new(nil, b)
+--local Xtensor = Tensor:new(nil, X)
+--local wtensor = Tensor:new(nil, w)
+--local btensor = Tensor:new(nil, b)
 
-local xw = Xtensor * wtensor
-local xw_b = xw + btensor
-print(xw_b)
+--local xw = Xtensor * wtensor
+--print(xw)
+--local xw_b = xw - btensor
+--print(xw_b)
 --print("Original Tensor")
 --local x = Tensor:new(nil, X)
 --print(x)

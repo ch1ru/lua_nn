@@ -1,4 +1,4 @@
-require('Tensor')
+require('lua_nn/src/?.lua')
 
 --Softmax gives a confidence level for unnormalized inputs. This can be very useful for classification systems
 --For example, the output [128, 9, 44] provides no context. However when softmax is applied it could give
