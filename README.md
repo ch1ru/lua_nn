@@ -1,2 +1,2 @@
-# nn.lua
-A Simple neural network library in lua
+# Roblox nn.lua
+A Simple neural network library in lua.
