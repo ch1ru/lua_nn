@@ -1,23 +1,24 @@
-require('./Helper')
+require('Helper')
 
-Tensor = {}
+Tensor = { tensor = {} }
 
 -- Derived class method new
 function Tensor:new (o, tensor)
-   o = o or {}
+   local o = o or {}
    setmetatable(o, self)
    self.__index = self
-   self.__mul = function (m1, m2) return Tensor:MatMul(m1, m2) end
-   self.__add = function (m, b) return Tensor:AddScalar(m, b) end
-   self.tensor = tensor
+   o.tensor = tensor
+   self.__mul = function (a,b) return Tensor:MatMul(a.tensor, b.tensor) end
+   self.__add = function (a, b) return Tensor:AddScalar(a.tensor, b.tensor) end
    return o
 end
 
 --Matrix multiplication
 function Tensor:MatMul( m1, m2 )
-   if #m1[1] ~= #m2 then       --inner matrix-dimensions must agree
-       return nil      
-   end 
+
+   --if #m1.tensor ~= #m2.tensor then       --inner matrix-dimensions must agree
+   --    return nil      
+   --end 
 
    local res = {}
    
@@ -55,6 +56,34 @@ function Tensor:AddScalar(m, b)
     return Tensor:new(nil, res)
 end
 
+function Tensor:MatDiv(m1, m2)
+    
+end
+
+function Tensor:MatSub(m1, m2)
+
+    print(m1)
+    print(m2)
+
+    if m1:Shape() ~= m2:Shape() then
+        --return error
+    end
+
+    local shape = m1:Shape()
+    local singleTable = {}
+
+    local m1SingleDim = ConvertTo1D(m1.tensor)
+    local m2SingleDim = ConvertTo1D(m2.tensor)
+
+    
+
+    for i = 1, #m1SingleDim do
+        table.insert(singleTable, m1SingleDim[i] - m2SingleDim[i])
+    end
+
+    return Tensor:new(nil, ResizeTable(singleTable, shape))
+end
+
 --Return size (TODO: allow for rugged tensors)
 function Tensor:Shape()
     local isTable = true
@@ -76,7 +105,7 @@ end
 function Tensor:__tostring()
     local str = ""
     for index, data in ipairs(self.tensor) do
-        for key, value in pairs(data) do
+        for key, value in ipairs(data) do
             str = str .. value .. '\t'
         end
         str = str .. '\n'
@@ -100,6 +129,15 @@ function ConvertTo1D(tensor)
     return newTable
 end
 
+--Create multi-dimensional table from a single table
+function ResizeTable(singleTable, newShape)
+    local newTable = ConvertTo1D(singleTable)
+    
+    for i = #newShape, 2, -1 do
+        newTable = table.explode(newTable, newShape[i])
+    end
+    return newTable
+end
 
 
 --Transpose matrix
@@ -115,26 +153,82 @@ function Tensor:Transpose(newShape)
 end
 
 
+function Tensor:Ones(size)
+    size = size or self:Shape()
+    return Tensor:new(nil, table.ones(size))
+end
+
+function Tensor:Zeros(size)
+    size = size or self:Shape()
+    return Tensor:new(nil,table.zeros(size))
+end
+
+--Sum values in table TODO: add options for axis and keepdims
+function Tensor:Sum(x)
+    local sum = 0
+    local shape = x:Shape()
+    print(tprint(shape))
+    local singleTable = ConvertTo1D(x.tensor)
+    for _, v in ipairs(singleTable) do
+      sum = sum + v
+    end
+    return Tensor:new(nil, ResizeTable(sum, shape))
+end
+
+function Tensor:Exp(x)
+    local shape = x:Shape()
+    local t = {}
+    local singleTensor = ConvertTo1D(x.tensor)
+    for _, v in ipairs(singleTensor) do
+        table.insert(t, math.exp(v))
+    end
+    --convert back to original shape
+    return Tensor:new(nil, ResizeTable(t, shape))
+end
+
+function Tensor:Max(x)
+    local maxTables = {}
+    for _, v in ipairs(x.tensor) do
+        table.insert(maxTables, table.max(v))
+    end
+    return Tensor:new(nil, {maxTables})
+end
+
+function Tensor:Min(x)
+    local minTables = {}
+    for _, v in ipairs(x.tensor) do
+        table.insert(minTables, table.min(v))
+    end
+    return Tensor:new(nil, {minTables})
+end
+
 --Example tensor inputs and weights
 local X = {{1,2,3,2.5},{2,5,-1,2},{-1.5,2.7,3.3,-0.8}}
 local w = {{0.2,0.5,-0.26}, {0.8,-0.91,-0.27}, {-0.5,0.26,0.17},{1,-0.5,0.87}}
 local b = {{2, 3, 0.5}}
 
-local out = Tensor:new(X) * Tensor:new(w)
-print("Original Tensor")
-local x = Tensor:new(nil, X)
-print(x)
-print("shape")
-print(tprint(x:Shape()))
-print()
+local Xtensor = Tensor:new(nil, X)
+local wtensor = Tensor:new(nil, w)
+local btensor = Tensor:new(nil, b)
+
+local xw = Xtensor * wtensor
+local xw_b = xw + btensor
+print(xw_b)
+--print("Original Tensor")
+--local x = Tensor:new(nil, X)
+--print(x)
+--print("shape")
+--print(tprint(x:Shape()))
+--print()
 --print(out.tensor + Tensor:new(b))
 
 --local btensor = Tensor:new(nil, b)
 --tprint(btensor:Shape())
-print()
-print("new Tensor")
-local xt = x:Transpose({4, 3})
-print(xt)
-print("new shape")
-print(tprint(xt:Shape()))
+--print()
+--print("new Tensor")
+--local xt = x:Transpose({4, 3})
+--print(xt)
+--print("new shape")
+--print(tprint(xt:Shape()))
 
+return Tensor

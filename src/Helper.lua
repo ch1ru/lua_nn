@@ -1,3 +1,5 @@
+require('Math')
+
 function tprint (tbl, index)
     local indent = 0
     local toprint = string.rep(" ", indent) .. "{\r\n"
@@ -47,3 +49,94 @@ function table.explode(tbl, groups)
   end
   return finalTable
 end
+
+function table.max(a)
+  local values = {}
+
+  for k,v in pairs(a) do
+    values[#values+1] = v
+  end
+  table.sort(values) -- automatically sorts lowest to highest
+
+  return values[#values]
+end
+
+function table.min(a)
+  local values = {}
+
+  for k,v in pairs(a) do
+    values[#values+1] = v
+  end
+  table.sort(values) -- automatically sorts lowest to highest
+
+  return values[1]
+end
+
+
+function table.normal(size, mean, variance) 
+  if mean == nil then mean = 0 end
+  if variance == nil then variance = 1 end
+  local t = {}
+  local n = 1
+  --calculate total size
+  for _, v in ipairs(size) do
+    n = n * v
+  end
+
+  for i = 1, n do
+    local x = Gaussian(mean, variance)
+    table.insert(t, x)
+  end
+
+  return ResizeTable(t, size)
+end
+
+function table.ones(size) 
+  local t = {}
+  local n = 1
+  --calculate total size
+  for _, v in ipairs(size) do
+    n = n * v
+  end
+
+  --fill 1D array with zeros
+  for i = 1, n do 
+    table.insert(t, 1)
+  end
+
+  --resize array
+  return ResizeTable(t, size)
+end
+
+function table.zeros(size) 
+  local t = {}
+  local n = 1
+  --calculate total size
+  for _, v in ipairs(size) do
+    n = n * v
+  end
+
+  --fill 1D array with zeros
+  for i = 1, n do 
+    table.insert(t, 0)
+  end
+
+  --resize array
+  return ResizeTable(t, size)
+end
+
+function table.__mul(t, scalar)
+
+  if type(t) == 'number' and type(scalar) == 'table' then
+     local tmp = t
+     t = scalar
+     scalar = tmp
+  end
+
+  local newTable = {}
+  for _, v in ipairs(t) do
+     table.insert(newTable, v * scalar)
+  end
+  return newTable
+end
+
