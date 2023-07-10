@@ -10,7 +10,7 @@ require('lua_nn/src/?.lua')
 function Softmax(x)
     local t = {}
     local exp_values = {}
-    for _, v in ipairs(x.tensor) do
+    for _, v in ipairs(x) do
         table.insert(exp_values, math.exp(v))
     end
     local norm_base = Tensor:sum(exp_values, 1, true)

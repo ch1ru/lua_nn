@@ -566,6 +566,20 @@ function table.purify(t)
    return tb
 end
 
+function table.duplicate(t, num)
+   num = num or 2
+   local newTable = {}
+   local innerTable = {}
+   for i = 1, num do
+      for _, v in ipairs(t) do
+         table.insert(innerTable, v)
+      end
+      table.insert(newTable, innerTable)
+      innerTable = {}
+   end
+   return newTable
+end
+
 function table.max(t, comparator)
 -- return the biggest value inside the table in base of a comparator function
    comparator = comparator or table.ge

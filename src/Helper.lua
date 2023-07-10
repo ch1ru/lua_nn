@@ -41,9 +41,10 @@ function table.explode(tbl, groups)
 end
 
 
-function table.normal(size, mean, variance) 
+function table.normal(size, mean, variance, sf) 
   if mean == nil then mean = 0 end
   if variance == nil then variance = 1 end
+  if sf == nil then sf = 1 end
   local t = {}
   local n = 1
   --calculate total size
@@ -53,58 +54,46 @@ function table.normal(size, mean, variance)
 
   for i = 1, n do
     local x = Gaussian(mean, variance)
-    table.insert(t, x)
+    table.insert(t, x * sf)
   end
 
   return ResizeTable(t, size)
 end
 
-function table.ones(size) 
-  local t = {}
-  local n = 1
-  --calculate total size
-  for _, v in ipairs(size) do
-    n = n * v
-  end
-
-  --fill 1D array with zeros
-  for i = 1, n do 
-    table.insert(t, 1)
-  end
-
-  --resize array
-  return ResizeTable(t, size)
-end
-
-function table.zeros(size) 
-  local t = {}
-  local n = 1
-  --calculate total size
-  for _, v in ipairs(size) do
-    n = n * v
-  end
-
-  --fill 1D array with zeros
-  for i = 1, n do 
-    table.insert(t, 0)
-  end
-
-  --resize array
-  return ResizeTable(t, size)
-end
-
-function table.__mul(t, scalar)
-
-  if type(t) == 'number' and type(scalar) == 'table' then
-     local tmp = t
-     t = scalar
-     scalar = tmp
-  end
-
+--Converts a tensor of any dimension into a single dimension
+function ConvertTo1D(tensor)
   local newTable = {}
-  for _, v in ipairs(t) do
-     table.insert(newTable, v * scalar)
+  for _, v in ipairs(tensor) do
+      if type(v) == 'table' then
+          local v = ConvertTo1D(v)
+          for _, w in ipairs(v) do
+              table.insert(newTable, w)
+          end
+      else
+          table.insert(newTable, v)
+      end
   end
   return newTable
+end
+
+--Create multi-dimensional table from a single table
+function ResizeTable(singleTable, newShape)
+  local newTable = ConvertTo1D(singleTable)
+  
+  for i = #newShape, 2, -1 do
+      newTable = table.explode(newTable, newShape[i])
+  end
+  return newTable
+end
+
+function Tensor:Exp(x)
+  local shape = x:Shape()
+  local t = {}
+  local singleTensor = ConvertTo1D(x.tensor)
+  for _, v in ipairs(singleTensor) do
+      table.insert(t, math.exp(v))
+  end
+  --convert back to original shape
+  return Tensor:new(nil, ResizeTable(t, shape))
 end
 

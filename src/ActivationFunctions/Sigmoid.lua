@@ -3,7 +3,7 @@
 
 function Sigmoid(x)
     local t = {}
-    for _, v in ipairs(x.tensor) do
+    for _, v in ipairs(x) do
         table.insert(t, 1 / 1 + math.exp(-v))
     end
     return Tensor:new(nil, t)

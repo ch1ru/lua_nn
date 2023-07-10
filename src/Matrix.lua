@@ -890,7 +890,7 @@ end
 --// matrix.print ( mtx [, formatstr] )
 -- print out the matrix, just calls tostring
 function matrix.print( ... )
-	print( matrix.tostring( ... ) )
+    print(matrix.tostring( ... ))
 end
 
 --// matrix.latex ( mtx [, align] )
