@@ -616,6 +616,41 @@ function table.min(t, comparator)
    return max
 end
 
+function table.explode(tbl, groups)
+   local pointer = 1
+   local pointerEnd = #tbl
+   local finalTable = {}
+   while pointer <= pointerEnd do
+     local currTable = {}
+     for i = 1, groups do
+       table.insert(currTable, tbl[pointer])
+       pointer = pointer + 1
+     end
+     table.insert(finalTable, currTable)
+   end
+   return finalTable
+ end
+ 
+ 
+ function table.normal(size, mean, variance, sf) 
+   if mean == nil then mean = 0 end
+   if variance == nil then variance = 1 end
+   if sf == nil then sf = 1 end
+   local t = {}
+   local n = 1
+   --calculate total size
+   for _, v in ipairs(size) do
+     n = n * v
+   end
+ 
+   for i = 1, n do
+     local x = Gaussian(mean, variance)
+     table.insert(t, x * sf)
+   end
+ 
+   return ResizeTable(t, size)
+ end
+
 function table.avg(t)
 -- return the average value inside table
    assert_table("avg", t)
