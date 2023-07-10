@@ -4,6 +4,10 @@ require('LossFunctions.BaseLoss')
 require('LossFunctions.CrossEntropyLoss')
 require('Tensor')
 
+local matrix = require 'Matrix'
+local table = require "LuaTable"
+
+
 DenseLayer = {n_inputs = 0, n_neurons = 0, weights = Tensor:new(nil, {}), bias = Tensor:new(nil, {}) }
 
 -- Derived class method new
@@ -28,3 +32,17 @@ end
 
 local loss = CrossEntropyLoss:Super({1}, {4})
 loss:Calculate()
+
+local t = { 1, 7, 2, 3, -4, 5 }
+
+-- remove negative values
+--t = table.accept(t, table.positive)
+
+-- create an enhanched table from an old one
+local tb = table(t)
+
+print(tb.min(tb))
+
+local m1 = matrix{{tb,tb,tb},{tb,tb,tb}}
+local m2 = matrix{{-8,1,3},{5,2,1}}
+print(m1)

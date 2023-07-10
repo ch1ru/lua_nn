@@ -25,16 +25,6 @@ function tprint (tbl, index)
     return toprint
 end
 
-function table.slice(tbl, first, last, step)
-  local sliced = {}
-
-  for i = first or 1, last or #tbl, step or 1 do
-    sliced[#sliced+1] = tbl[i]
-  end
-
-  return sliced
-end
-
 function table.explode(tbl, groups)
   local pointer = 1
   local pointerEnd = #tbl
@@ -48,28 +38,6 @@ function table.explode(tbl, groups)
     table.insert(finalTable, currTable)
   end
   return finalTable
-end
-
-function table.max(a)
-  local values = {}
-
-  for k,v in pairs(a) do
-    values[#values+1] = v
-  end
-  table.sort(values) -- automatically sorts lowest to highest
-
-  return values[#values]
-end
-
-function table.min(a)
-  local values = {}
-
-  for k,v in pairs(a) do
-    values[#values+1] = v
-  end
-  table.sort(values) -- automatically sorts lowest to highest
-
-  return values[1]
 end
 
 

@@ -1,5 +1,8 @@
 require('Helper')
 
+local matrix = require 'Matrix'
+local table = require "LuaTable"
+
 Tensor = { tensor = {} }
 
 -- Derived class method new
