@@ -28,7 +28,5 @@ function DenseLayer:Forward(inputs)
    for k,v in ipairs(self.output) do
       self.output[k] = matrix:new(v) + self.bias
    end
-   print(self.output)
-   --print(self.output)
    return self.output
 end
