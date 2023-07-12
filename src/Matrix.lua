@@ -197,8 +197,15 @@ function matrix.add( m1, m2 )
 		local m3i = {}
 		mtx[i] = m3i
 		for j = 1,#m1[1] do
-            if m2[i][j] == nil then m2[i][j] = m2[i] end
-			m3i[j] = m1[i][j] + m2[i][j]
+            local add = 0
+            if #m2 < i then --horizontal row
+                add = m2[1][j]
+            elseif #m2[1] < j then
+                add = m2[i][1] --vertical column
+            else 
+                add = m2[i][j]
+            end
+			m3i[j] = m1[i][j] + add
 		end
 	end
 	return setmetatable( mtx, matrix_meta )
@@ -213,8 +220,15 @@ function matrix.sub( m1, m2 )
 		local m3i = {}
 		mtx[i] = m3i
 		for j = 1,#m1[1] do
-            if m2[i][j] == nil then m2[i][j] = m2[i][1] end
-			m3i[j] = m1[i][j] - m2[i][j]
+            local sub = 0
+            if #m2 < i then --horizontal row
+                sub = m2[1][j]
+            elseif #m2[1] < j then
+                sub = m2[i][1] --vertical column
+            else 
+                sub = m2[i][j]
+            end
+			m3i[j] = m1[i][j] - sub
 		end
 	end
 	return setmetatable( mtx, matrix_meta )
@@ -237,6 +251,26 @@ function matrix.mul( m1, m2 )
 		end
 	end
 	return setmetatable( mtx, matrix_meta )
+end
+
+function MatDivByRowOrCol(m1, m2)
+    local mtx = {}
+        for i = 1,#m1 do
+            local m3i = {}
+            mtx[i] = m3i
+            for j = 1,#m1[1] do
+                local div = 1
+                if #m2 < i then --horizontal row
+                    div = m2[1][j]
+                elseif #m2[1] < j then
+                    div = m2[i][1] --vertical column
+                else 
+                    div = m2[i][j]
+                end
+                m3i[j] = m1[i][j] / div
+            end
+        end
+    return setmetatable( mtx, matrix_meta )
 end
 
 --//  matrix.div ( m1, m2 )

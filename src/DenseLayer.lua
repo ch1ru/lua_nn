@@ -17,16 +17,12 @@ function DenseLayer:new (o, n_inputs, n_neurons, weights, bias)
    o.n_inputs = n_inputs
    o.n_neurons = n_neurons
    o.weights = weights or matrix:new(table.normal({n_inputs, n_neurons}, 0, 1, 0.01))
-   o.bias = bias or matrix:new(table.zeros(n_neurons))
+   o.bias = bias or matrix:new({table.zeros(n_neurons)})
    return o
 end
 
 function DenseLayer:Forward(inputs)
    --apply relu activation
-   --local inputs = ReLU(inputs)
-   self.output = (inputs * self.weights)
-   for k,v in ipairs(self.output) do
-      self.output[k] = matrix:new(v) + self.bias
-   end
+   self.output = inputs * self.weights + self.bias
    return self.output
 end

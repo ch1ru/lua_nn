@@ -669,8 +669,15 @@ function table.explode(tbl, groups)
      table.insert(finalTable, currTable)
    end
    return finalTable
- end
- 
+end
+
+function table.arrange(first, last, step)
+   local t = {}
+   for i = first, last, step do
+      table.insert(t, i)
+   end
+   return t
+end
  
  function table.normal(size, mean, variance, sf) 
    if mean == nil then mean = 0 end
