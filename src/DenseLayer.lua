@@ -1,8 +1,7 @@
 require('Helper')
-require('ActivationFunctions.Relu')
-require('LossFunctions.BaseLoss')
-require('LossFunctions.CrossEntropyLoss')
-require('Tensor')
+require('Relu')
+require('BaseLoss')
+require('CrossEntropyLoss')
 
 local matrix = require 'Matrix'
 local table = require "Table"

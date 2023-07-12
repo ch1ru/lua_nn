@@ -197,6 +197,7 @@ function matrix.add( m1, m2 )
 		local m3i = {}
 		mtx[i] = m3i
 		for j = 1,#m1[1] do
+            if m2[i][j] == nil then m2[i][j] = m2[i] end
 			m3i[j] = m1[i][j] + m2[i][j]
 		end
 	end
@@ -205,12 +206,14 @@ end
 
 --// matrix.sub ( m1 ,m2 )
 -- Subtract two matrices; m2 may be of bigger size than m1
+--m2 value can be 1 dim less than m1
 function matrix.sub( m1, m2 )
 	local mtx = {}
 	for i = 1,#m1 do
 		local m3i = {}
 		mtx[i] = m3i
 		for j = 1,#m1[1] do
+            if m2[i][j] == nil then m2[i][j] = m2[i][1] end
 			m3i[j] = m1[i][j] - m2[i][j]
 		end
 	end

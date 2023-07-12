@@ -582,38 +582,78 @@ end
 
 function table.max(t, comparator)
 -- return the biggest value inside the table in base of a comparator function
+-- If the table is 1D it returns a single table with the greatest value
+-- Multiple dimensions retain their original shape
    comparator = comparator or table.ge
    assert_table_func("max", t, comparator)
-
    local max = t[1]
 
-   for i = 2, #t do
+   for i = 1, #t do
       local item = t[i]
 
-      if comparator(item, max) then
-         max = item
+      if type(item) == 'table' then
+         if i == 1 then max = {} end
+         table.insert(max, table.max(item))
+      else
+         if comparator(item, max) then
+            max = item
+         end
       end
    end
-
-   return max
+   return table(max)
 end
 
 function table.min(t, comparator)
 -- return the smallest value inside the table in base of a comparator function
-   comparator = comparator or table.le
-   assert_table_func("min", t, comparator)
+-- If the table is 1D it returns a single table with the least value
+-- Multiple dimensions retain their original shape
+comparator = comparator or table.le
+assert_table_func("max", t, comparator)
+local min = t[1]
 
-   local max = t[1]
+for i = 1, #t do
+   local item = t[i]
 
-   for i = 2, #t do
-      local item = t[i]
-
-      if comparator(item, max) then
-         max = item
+   if type(item) == 'table' then
+      if i == 1 then min = {} end
+      table.insert(min, table.min(item))
+   else
+      if comparator(item, min) then
+         min = item
       end
    end
+end
+return table(min)
+end
 
-   return max
+function table.sumT(t)
+   local sum = {}
+   local counter = 0
+   for i = 1, #t do
+      local item = t[i]
+      if type(item) == 'table' then
+         table.insert(sum, table.sumT(item))
+      else
+         counter = counter + item
+      end
+   end
+   if counter > 0 then
+      return table(counter)
+   else
+      return table(sum)
+   end
+end
+
+function table.exp(t)
+   local exp = {}
+   for v in table.values(t) do
+      if type(v) == 'table' then
+         table.insert(exp, table.exp(v))
+      else
+         table.insert(exp, math.exp(v))
+      end
+   end
+   return table(exp)
 end
 
 function table.explode(tbl, groups)

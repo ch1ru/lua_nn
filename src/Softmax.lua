@@ -1,4 +1,7 @@
-require('lua_nn/src/?.lua')
+require('Table')
+require('Helper')
+
+local matrix = require('Matrix')
 
 --Softmax gives a confidence level for unnormalized inputs. This can be very useful for classification systems
 --For example, the output [128, 9, 44] provides no context. However when softmax is applied it could give
@@ -8,14 +11,16 @@ require('lua_nn/src/?.lua')
 -- s(i, j) = e^z(i,j) / Σe^z(i, j)
 
 function Softmax(x)
-    local t = {}
-    local exp_values = {}
-    for _, v in ipairs(x) do
-        table.insert(exp_values, math.exp(v))
-    end
-    local norm_base = Tensor:sum(exp_values, 1, true)
-    local norm_values = {}
-    for value in exp_values do
-        table.insert(norm_values, value / norm_base)
-    end
+    local t1 = {{2,5,8},{3,3,3},{4,5,2},{5,1,3},{6,8,99},{76,8,1},{8,8,3}}
+    local t2 = table({1,2,3,4,5,6,7,8,9})
+
+    local exp_values = table.exp(X - matrix(table.max(X)))
+    local probabilities = matrix(exp_values):divnum(matrix(table.sumT(exp_values)))
+    return probabilities
 end
+
+
+
+
+
+
