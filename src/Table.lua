@@ -444,6 +444,20 @@ function table.accept(t, criteria, ...)
    return tb
 end
 
+function table.clip(t, lb, ub)
+   local new = {}
+   for i = 1, #t do
+      if type(t[i]) == 'table' then
+         table.insert(new, table.clip(t[i], lb, ub))
+      else
+         if t[i] > lb and t[i] < ub then
+            table.insert(new, t[i])
+         end
+      end
+   end
+   return new
+end
+
 function table.reject(t, criteria, ...)
 -- remove elements that matches the criteria
    assert_table_func("reject", t, criteria)
@@ -644,6 +658,19 @@ function table.sumT(t)
    end
 end
 
+function table.log(t, base)
+   base = base or 10 -- default to natural log
+   local log = {}
+   for v in table.values(t) do
+      if type(v) == 'table' then
+         table.insert(log, table.log(v, base))
+      else
+         table.insert(log, math.log(v, base))
+      end
+   end
+   return table(log)
+end
+
 function table.exp(t)
    local exp = {}
    for v in table.values(t) do
@@ -697,6 +724,18 @@ end
  
    return ResizeTable(t, size)
  end
+
+function table.makeNegative(t)
+   local inverse = {}
+   for v in table.values(t) do
+      if type(v) == 'table' then
+         table.insert(inverse, table.makeNegative(v))
+      else
+         table.insert(inverse, v - (2*v))
+      end
+   end
+   return table(inverse)
+end
 
 function table.avg(t)
 -- return the average value inside table

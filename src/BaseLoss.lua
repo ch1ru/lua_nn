@@ -17,8 +17,12 @@ function BaseLoss:Calculate(output, y)
    output = output or self.output
    y = y or self.y
 
-   local sample_losses = self:Forward(output, y)
+   local sample_losses = self.Forward(output, y)
+  
    -- add mean and return data loss
+   local dataLoss = table.avg(sample_losses)
+
+   return dataLoss
 end
 
 return BaseLoss
