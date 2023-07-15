@@ -317,6 +317,20 @@ function matrix.divnum( m1, num )
 	return setmetatable( mtx, matrix_meta )
 end
 
+function matrix.eye(n)
+	local t = matrix(n, n)
+	for i = 1, n do
+		for j = 1, n do
+			if i == j then
+				matrix.setelement(t, i, j, 1)
+			else
+				matrix.setelement(t, i, j, 0)
+			end
+		end
+	end
+	return t
+end
+
 
 --// for real and complex matrices only //--
 
@@ -444,6 +458,33 @@ function matrix.det( m1 )
 	end
 	-- det ready to return
 	return det
+end
+
+--Dot product of 2 matrices
+function matrix.dot(m1, m2)
+	local m3 = matrix:new(m2:rows(), m2:columns())
+	for m2c = 1, m2:columns() do --cycle over each column in m2
+
+		local currM1 = {}
+		local currM2 = {}
+		
+		for m2r = 1, m2:rows() do
+			table.insert(currM1, m2[m2r][m2c])
+		end
+
+		for m1r = 1, m1:rows() do --cycle over each row in m1
+			table.insert(currM2, m1[m1r])
+		end
+
+		for i, r in ipairs(matrix(currM2)) do
+			local dotSum = 0
+			for i = 1, #r do
+				dotSum = dotSum + currM1[i] * r[i]
+			end
+			matrix.setelement(m3, i, m2c, dotSum)
+		end
+	end
+	return m3
 end
 
 --// matrix.dogauss ( mtx )

@@ -12,11 +12,24 @@ local matrix = require('Matrix')
 
 local Softmax = {}
 
-function Softmax:Forward(x)
+function Softmax:new(o)
+    o = o or {}
+    setmetatable(o, self)
+    o.forward = function (x) return self:Forward(o, x) end
+    o.backward = function (dvalues) return self:Backward(o, dvalues) end
+    return o
+end
 
+function Softmax:Forward(self, x)
+    self.inputs = x
     local exp_values = table.exp(x - matrix(table.max(x)))
     local probabilities = MatDivByRowOrCol(matrix(exp_values), matrix(table.sumT(exp_values)))
+    self.output = probabilities
     return probabilities
+end
+
+function Softmax:Backward(self, dvalues)
+
 end
 
 return Softmax

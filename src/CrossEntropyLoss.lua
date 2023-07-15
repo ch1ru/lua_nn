@@ -13,11 +13,12 @@ function CrossEntropyLoss:new(o, y_pred, y_true)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
-    o.Forward = function (y_pred, y_true) return CrossEntropyLoss:Forward(y_pred, y_true) end
+    o.forward = function (y_pred, y_true) return CrossEntropyLoss:Forward(o, y_pred, y_true) end
+    o.backward = function (dvalues, y_true) return self:Backward(o, dvalues, y_true) end
     return self.Super(o, y_pred, y_true)
 end
 
-function CrossEntropyLoss:Forward (y_pred, y_true)
+function CrossEntropyLoss:Forward (self, y_pred, y_true)
     local samples = y_pred:size()
     
     --Weight samples to not affect the mean too much
@@ -40,6 +41,13 @@ function CrossEntropyLoss:Forward (y_pred, y_true)
     local logLiklihoods = table.log(correctConfidences)
     local negativeLogLiklihoods = table.makeNegative(logLiklihoods)
     return negativeLogLiklihoods
+end
+
+function CrossEntropyLoss:Backward(self, dvalues, y_true)
+    local samples = dvalues:columns() * dvalues:rows()
+    local labels = dvalues:columns()
+    self.dinputs = matrix(table.makeNegative(y_true)) / dvalues
+    self.dinputs = self.dinputs / samples
 end
 
 return CrossEntropyLoss
