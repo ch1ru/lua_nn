@@ -13,6 +13,7 @@ function ReLU:new(o)
 end
 
 function ReLU:Forward(self, x)
+  self.inputs = x
     for i in x:ipairs() do
        for j = 1, #x[i] do
           if type(x[i][j] == 'table') then

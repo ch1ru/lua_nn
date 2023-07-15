@@ -462,7 +462,7 @@ end
 
 --Dot product of 2 matrices
 function matrix.dot(m1, m2)
-	local m3 = matrix:new(m2:rows(), m2:columns())
+	local m3 = matrix:new(m1:rows(), m2:columns())
 	for m2c = 1, m2:columns() do --cycle over each column in m2
 
 		local currM1 = {}

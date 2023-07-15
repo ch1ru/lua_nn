@@ -33,8 +33,7 @@ end
 function DenseLayer:Backward(self, dvalues)
    local inputs_transposed = matrix.transpose(self.inputs)
    local weights_transposed = matrix.transpose(self.weights)
-
-   self.dweights = matrix.dot(inputs_transposed, dvalues)
+   self.dweights = matrix.dot(dvalues, inputs_transposed)
    self.dbiases = table.sumT(dvalues)
    self.dinputs = matrix.dot(dvalues, weights_transposed)
 end

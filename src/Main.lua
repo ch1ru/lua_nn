@@ -357,11 +357,18 @@ X = dense2.forward(X)
 local loss_fn = CrossEntropyLoss:new(nil, X, y)
 
 local loss = loss_activation.forward(X, y)
-print(loss)
-print(loss_activation.output)
 --local loss = loss_fn.calculate(loss_activation.output, y)
 
 loss_activation.backward(loss_activation.output, y)
+dense2.backward(loss_activation.dinputs)
+activation1.backward(dense2.dinputs)
+
+--dense1.backward(activation1.dinputs)
+
+print(dense1.dweights)
+print(dense1.dbiases)
+print(dense2.dweights)
+print(dense2.dbiases)
 
 
 --local losses = loss_fn:Calculate(X, y)
