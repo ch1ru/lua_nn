@@ -23,7 +23,7 @@ function SoftmaxCrossEntropyLoss:Forward(self, inputs, y_true)
 end
 
 function SoftmaxCrossEntropyLoss:Backward(self, dvalues, y_true)
-    local samples = dvalues:columns() * dvalues:rows()
+    local samples = dvalues:rows()
     if y_true:rows() == 2 then
         --one hot encoded
     end

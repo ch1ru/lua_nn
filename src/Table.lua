@@ -640,9 +640,21 @@ end
 return table(min)
 end
 
-function table.sumT(t)
+function table.sumT(t, axis)
+   axis = axis or 1
    local sum = {}
    local counter = 0
+   if axis == 0 then --if counting columns
+      for c = 1, t:columns() do
+         for i = 1, t:rows() do
+            counter = counter + t[i][c]
+         end
+         table.insert(sum, counter)
+         counter = 0 -- reset counter
+      end
+      return sum
+   end
+   --count axis in rows
    for i = 1, #t do
       local item = t[i]
       if type(item) == 'table' then

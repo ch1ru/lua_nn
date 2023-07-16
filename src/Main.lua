@@ -1,37 +1,21 @@
 local matrix = require('Matrix')
 require('Table')
-require('DenseLayer')
+local DenseLayer = require('DenseLayer')
 local Relu = require('Relu')
 local softmax = require('Softmax')
 require('SoftmaxCrossEntropyLoss')
 require('BaseLoss')
+local Units = require('UnitTests')
+require('Accuracy')
 
---create a sine wave as our training data
---local X = table.arrange(1, 10, .1)
+local dense1 = DenseLayer:new(2, 3)
+local dense2 = DenseLayer:new(3, 3)
 
-local X = {} --Input training coords
-for i = 1, 10, 0.1 do
-    table.insert(X, {i, math.sin(i)})
-end
+local activation1 = Relu:new()
+local activation2 = softmax:new()
+local loss_activation = SoftmaxCrossEntropyLoss:new()
 
-local y = {}
-for _, v in ipairs(X) do
-    if(v[2] > 0) then
-        table.insert(y, 1)
-    else
-        table.insert(y, 0)
-    end
-end
-
-X = matrix(X)
-y = matrix({y})
-
-
--------------------------------------
--------------Test data---------------
-
-
-X = matrix({{ 0.     ,     0.        },
+local X = matrix({{ 0.     ,     0.        },
  { 0.00299556 , 0.00964661},
  { 0.01288097  ,0.01556285},
  { 0.02997479 , 0.0044481 },
@@ -332,7 +316,7 @@ X = matrix({{ 0.     ,     0.        },
  {-0.9793868,  -0.14387996},
  {-0.9427888 ,  0.33339068}})
 
-y = matrix({{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+ local y = matrix({{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -342,32 +326,38 @@ y = matrix({{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 2, 2, 2, 2}})
 
-local dense1 = DenseLayer:new(nil, 2, 3)
-local dense2 = DenseLayer:new(nil, 3, 3)
-local activation1 = Relu:new()
-local activation2 = softmax:new()
-local loss_activation = SoftmaxCrossEntropyLoss:new()
+dense1.forward(X)
 
+activation1.forward(dense1.output)
 
-X = dense1.forward(X)
-X = activation1.forward(X)
-X = dense2.forward(X)
---X = activation2.forward(X)
+dense2.forward(activation1.output)
+--activation2.forward(dense2.output)
 
 local loss_fn = CrossEntropyLoss:new(nil, X, y)
 
-local loss = loss_activation.forward(X, y)
+local loss = loss_activation.forward(dense2.output, y)
+print("loss ", loss)
 --local loss = loss_fn.calculate(loss_activation.output, y)
+
+local acc = CalculateAcc(loss_activation.output, y)
+print("Acc: ", acc)
 
 loss_activation.backward(loss_activation.output, y)
 dense2.backward(loss_activation.dinputs)
 activation1.backward(dense2.dinputs)
+dense1.backward(activation1.dinputs)
 
---dense1.backward(activation1.dinputs)
-
+print()
+print("dense1 dweights")
 print(dense1.dweights)
+print()
+print("dense1 dbiases")
 print(dense1.dbiases)
+print()
+print("dense2 dweights")
 print(dense2.dweights)
+print()
+print("dense2 dbiases")
 print(dense2.dbiases)
 
 

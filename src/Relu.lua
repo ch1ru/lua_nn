@@ -14,29 +14,32 @@ end
 
 function ReLU:Forward(self, x)
   self.inputs = x
+  local newM = matrix:new(x:rows(), x:columns())
     for i in x:ipairs() do
        for j = 1, #x[i] do
           if type(x[i][j] == 'table') then
-            x[i][j] = math.max(0, x[i][j])
+            newM[i][j] = math.max(0, x[i][j])
           else
-            x[i][j] = math.max(0, x[i][j])
+            newM[i][j] = math.max(0, x[i][j])
           end
        end
     end
-    self.output = x
+    self.output = newM
     return self.output
 end
 
 function ReLU:Backward(self, dvalues)
   self.dinputs = dvalues
+  
   --give a zero gradient where inputs where negative
-  for i = 1, self.inputs:columns() do
-    for j = 1, self.inputs:rows() do
+  for i = 1, self.inputs:rows() do
+    for j = 1, self.inputs:columns() do
       if self.inputs[i][j] < 0 then
         matrix.setelement(self.dinputs, i, j, 0)
       end
     end
   end
+  return self.dinputs
 end
 
 return ReLU
