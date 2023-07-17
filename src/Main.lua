@@ -7,13 +7,17 @@ require('SoftmaxCrossEntropyLoss')
 require('BaseLoss')
 local Units = require('UnitTests')
 require('Accuracy')
+local Optimizer = require('Optimizer')
 
-local dense1 = DenseLayer:new(2, 3)
-local dense2 = DenseLayer:new(3, 3)
+local dense1 = DenseLayer:new(2, 50)
+local dense2 = DenseLayer:new(50, 50)
+local dense3 = DenseLayer:new(50, 3)
 
 local activation1 = Relu:new()
-local activation2 = softmax:new()
+local activation2 = Relu:new()
 local loss_activation = SoftmaxCrossEntropyLoss:new()
+
+local optimizer = Optimizer.SGD(.5, 0.001, 0.9)
 
 local X = matrix({{ 0.     ,     0.        },
  { 0.00299556 , 0.00964661},
@@ -326,26 +330,41 @@ local X = matrix({{ 0.     ,     0.        },
 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 2, 2, 2, 2}})
 
-dense1.forward(X)
+for epoch = 1, 100000 do
+    dense1.forward(X)
 
-activation1.forward(dense1.output)
+    activation1.forward(dense1.output)
 
-dense2.forward(activation1.output)
---activation2.forward(dense2.output)
+    dense2.forward(activation1.output)
+    
+    activation2.forward(dense2.output)
 
-local loss_fn = CrossEntropyLoss:new(nil, X, y)
+    dense3.forward(activation2.output)
 
-local loss = loss_activation.forward(dense2.output, y)
-print("loss ", loss)
---local loss = loss_fn.calculate(loss_activation.output, y)
+    local loss = loss_activation.forward(dense3.output, y)
+    
+    --local loss = loss_fn.calculate(loss_activation.output, y)
 
-local acc = CalculateAcc(loss_activation.output, y)
-print("Acc: ", acc)
+    local acc = CalculateAcc(loss_activation.output, y)
+    if epoch % 1 == 0 then
+        print(string.format("Epoch: %d, Acc: %f, Loss: %f, lr: %f", epoch, acc, loss, optimizer.currentlr))
+    end
 
-loss_activation.backward(loss_activation.output, y)
-dense2.backward(loss_activation.dinputs)
-activation1.backward(dense2.dinputs)
-dense1.backward(activation1.dinputs)
+
+    loss_activation.backward(loss_activation.output, y)
+    dense3.backward(loss_activation.dinputs)
+    activation2.backward(dense3.dinputs)
+    dense2.backward(activation2.dinputs)
+    activation1.backward(dense2.dinputs)
+    dense1.backward(activation1.dinputs)
+
+    optimizer.PreUpdateParams()
+    optimizer.UpdateParams(dense1)
+    optimizer.UpdateParams(dense2)
+    optimizer.UpdateParams(dense3)
+    optimizer.PostUpdateParams()
+end
+
 
 print()
 print("dense1 dweights")

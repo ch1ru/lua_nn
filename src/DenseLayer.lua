@@ -25,13 +25,13 @@ function DenseLayer:new (n_inputs, n_neurons, weights, bias)
       {0.011709864170328    ,   0.0020977908861994  ,   0.0014130520542403}
    })
 
-   if n_inputs == 2 and n_neurons == 3 then
-      o.weights = normal2
-   elseif n_inputs == 3 and n_neurons == 3 then
-      o.weights = normal3
-   end
-   --o.weights = weights or matrix:new(table.normal({n_inputs, n_neurons}, 0, 1, 0.01))
-   o.bias = bias or matrix:new({table.zeros(n_neurons)})
+   --if n_inputs == 2 and n_neurons == 3 then
+   --   o.weights = normal2
+   --elseif n_inputs == 3 and n_neurons == 3 then
+   --   o.weights = normal3
+   --end
+   o.weights = weights or matrix:new(table.normal({n_inputs, n_neurons}, 0, 1, 0.01))
+   o.biases = bias or matrix:new({table.zeros(n_neurons)})
    --functions
    o.forward = function (inputs) return self:Forward(o, inputs) end
    o.backward = function (dvalues) return self:Backward(o, dvalues) end
@@ -40,7 +40,7 @@ end
 
 function DenseLayer:Forward(self, inputs)
    self.inputs = inputs
-   self.output = inputs * self.weights + self.bias
+   self.output = inputs * self.weights + self.biases
    return self.output
 end
 
