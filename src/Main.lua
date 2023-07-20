@@ -1,23 +1,25 @@
 local matrix = require('Matrix')
 require('Table')
+require('TestDataFunctions')
 local DenseLayer = require('DenseLayer')
 local Relu = require('Relu')
-local softmax = require('Softmax')
+local Softmax = require('Softmax')
 require('SoftmaxCrossEntropyLoss')
 require('BaseLoss')
 local Units = require('UnitTests')
 require('Accuracy')
 local Optimizer = require('Optimizer')
 
-local dense1 = DenseLayer:new(2, 50)
-local dense2 = DenseLayer:new(50, 50)
-local dense3 = DenseLayer:new(50, 3)
+local dense1 = DenseLayer:new(2, 64)
+local dense2 = DenseLayer:new(64, 64)
+local dense3 = DenseLayer:new(64, 4)
 
 local activation1 = Relu:new()
 local activation2 = Relu:new()
 local loss_activation = SoftmaxCrossEntropyLoss:new()
+local softmax = Softmax:new()
 
-local optimizer = Optimizer.SGD(.5, 0.001, 0.9)
+local optimizer = Optimizer.SGD(.01, 0.0005, 0.9)
 
 local X = matrix({{ 0.     ,     0.        },
  { 0.00299556 , 0.00964661},
@@ -330,32 +332,77 @@ local X = matrix({{ 0.     ,     0.        },
 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 2, 2, 2, 2}})
 
-for epoch = 1, 100000 do
-    dense1.forward(X)
+
+
+
+local X_train, y_train = GenerateBullseye(2000)
+local X_test, y_test
+local loss_tracker = {}
+local acc_tracker = {}
+local epoch_tracker = {}
+
+for epoch = 1, 3000 do
+
+    table.insert(epoch_tracker, epoch)
+
+    dense1.forward(X_train)
+
 
     activation1.forward(dense1.output)
 
     dense2.forward(activation1.output)
-    
     activation2.forward(dense2.output)
 
     dense3.forward(activation2.output)
 
-    local loss = loss_activation.forward(dense3.output, y)
-    
-    --local loss = loss_fn.calculate(loss_activation.output, y)
+    local loss = loss_activation.forward(dense3.output, y_train)
+    table.insert(loss_tracker, loss)
 
-    local acc = CalculateAcc(loss_activation.output, y)
-    if epoch % 1 == 0 then
-        print(string.format("Epoch: %d, Acc: %f, Loss: %f, lr: %f", epoch, acc, loss, optimizer.currentlr))
+    local acc = CalculateAcc(loss_activation.output, y_train)
+    table.insert(acc_tracker, acc)
+
+    if epoch % 5 == 0 then
+        print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
+    end
+
+    if epoch % 100 == 0 then
+        print()
+        print("testing...")
+
+        X_test, y_test = GenerateBullseye(2000)
+
+        dense1.forward(X_test)
+
+        activation1.forward(dense1.output)
+
+        dense2.forward(activation1.output)
+        
+        activation2.forward(dense2.output)
+
+        dense3.forward(activation2.output)
+
+        local loss = loss_activation.forward(dense3.output, y_test)
+        
+        --local loss = loss_fn.calculate(loss_activation.output, y)
+
+        local acc = CalculateAcc(loss_activation.output, y_test)
+
+        print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
+        print()
+
+        
+        local preds = softmax.predictions(dense3.output)
+        SaveData('./TrainResults/output.csv', ConvertPredsToCSV(X_test, preds))
+        
     end
 
 
-    loss_activation.backward(loss_activation.output, y)
+
+    loss_activation.backward(loss_activation.output, y_train)
     dense3.backward(loss_activation.dinputs)
     activation2.backward(dense3.dinputs)
     dense2.backward(activation2.dinputs)
-    activation1.backward(dense2.dinputs)
+    activation1.backward(dense3.dinputs)
     dense1.backward(activation1.dinputs)
 
     optimizer.PreUpdateParams()
@@ -363,22 +410,11 @@ for epoch = 1, 100000 do
     optimizer.UpdateParams(dense2)
     optimizer.UpdateParams(dense3)
     optimizer.PostUpdateParams()
+
+    
 end
 
-
-print()
-print("dense1 dweights")
-print(dense1.dweights)
-print()
-print("dense1 dbiases")
-print(dense1.dbiases)
-print()
-print("dense2 dweights")
-print(dense2.dweights)
-print()
-print("dense2 dbiases")
-print(dense2.dbiases)
-
+SaveData('./TrainResults/trainingStats.csv', ConvertTrainingToCSV(epoch_tracker, acc_tracker, loss_tracker))
 
 --local losses = loss_fn:Calculate(X, y)
 

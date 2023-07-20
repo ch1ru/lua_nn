@@ -1,7 +1,8 @@
-require('Table')
+
 require('Helper')
 
 local matrix = require('Matrix')
+local table = require('Table')
 
 --Softmax gives a confidence level for unnormalized inputs. This can be very useful for classification systems
 --For example, the output [128, 9, 44] provides no context. However when softmax is applied it could give
@@ -17,6 +18,7 @@ function Softmax:new(o)
     setmetatable(o, self)
     o.forward = function (x) return self:Forward(o, x) end
     o.backward = function (dvalues) return self:Backward(o, dvalues) end
+    o.predictions = function (outputs, classNames) return self:Predictions(o, outputs, classNames) end 
     return o
 end
 
@@ -30,6 +32,21 @@ end
 
 function Softmax:Backward(self, dvalues)
 
+end
+
+function Softmax:Predictions(self, x, classNames)
+    local preds = self.forward(x)
+    local pred_t = {}
+
+    for i = 1, #preds do
+        for j = 1, #preds[i] do
+            if table.max(preds[i])[1] == preds[i][j] then
+                table.insert(pred_t, j-1)
+            end
+        end
+    end
+
+    return pred_t
 end
 
 return Softmax
