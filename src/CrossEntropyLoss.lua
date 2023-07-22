@@ -9,13 +9,13 @@ local matrix = require('Matrix')
 CrossEntropyLoss.Super = function (self, y_pred, y_true) return BaseLoss:new(self, y_pred, y_true) end
 
 -- Derived class method crossentropyloss
-function CrossEntropyLoss:new(o, y_pred, y_true)
-    o = o or {}
+function CrossEntropyLoss:new()
+    local o = {}
     setmetatable(o, self)
     self.__index = self
     o.forward = function (y_pred, y_true) return CrossEntropyLoss:Forward(o, y_pred, y_true) end
     o.backward = function (dvalues, y_true) return self:Backward(o, dvalues, y_true) end
-    return self.Super(o, y_pred, y_true)
+    return self.Super(o)
 end
 
 function CrossEntropyLoss:Forward (self, y_pred, y_true)

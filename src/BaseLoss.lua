@@ -3,15 +3,11 @@ BaseLoss = { output = {}, y = {} }
 
 -- Derived class method new
 
-function BaseLoss:new (o, output, y)
+function BaseLoss:new (o)
    local o = o or {}
    setmetatable(o, self)
    self.__index = self
-   o.output = output
-   o.y = y
-
    o.calculate = function (output, y) return self:Calculate(o, output, y) end
-   
    return o
 end
 
