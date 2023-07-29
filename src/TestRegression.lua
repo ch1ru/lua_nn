@@ -23,11 +23,20 @@ for _, v in ipairs(X_train) do
   table.insert(y_train, math.sin(v * math.pi * 2))
 end
 
+for i=1, #X_train do
+  --print(X_train[i] .. ',' .. y_train[i])
+end
+
 X_train = matrix.transpose(matrix({X_train}))
+
 
 local acc_precision = Std(y_train) / 250
 
-local dense1 = DenseLayer:new(1, 64)
+y_train = matrix({y_train})
+
+
+
+local dense1 = DenseLayer:new(1, 64, 0, 5e-4, 0, 5e-4)
 local activation1 = Relu:new()
 
 local dense2 = DenseLayer:new(64, 64)
@@ -38,9 +47,11 @@ local activation3 = LinearActivation:new()
 
 local lossFn = MSE:new()
 
-local optimizer = Optimizer.Adam(0.005, 1e-3)
+local optimizer = Optimizer.Adam(0.01, 1e-3)
 
-for i = 1, 1 do
+
+
+for epoch = 1, 1000 do
   
   dense1.forward(matrix(X_train))
   activation1.forward(dense1.output)
@@ -53,11 +64,21 @@ for i = 1, 1 do
 
   local data_loss = lossFn.calculate(activation3.output, y_train)
 
-  --reg loss
+  local reg_loss = lossFn.regularization_loss(dense1) + lossFn.regularization_loss(dense2) + lossFn.regularization_loss(dense3)
+
+  local loss = data_loss + reg_loss
+
+  local acc = 0.0
 
   local predictions = activation3.output
 
-  lossFn.backward(activation3.output, y_train)
+  if epoch % 1 == 0 then
+    print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
+    SaveData('./TrainResults/output.csv', ConvertRegressPredsToCSV(X_train, predictions))
+  end
+
+  lossFn.backward(activation3.output, matrix.transpose(y_train))
+
   activation3.backward(lossFn.dinputs)
   dense3.backward(activation3.dinputs)
   activation2.backward(dense3.dinputs)

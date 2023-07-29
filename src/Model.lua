@@ -19,7 +19,7 @@ function Model:new ()
    o.train = function (X, y, epochs, printEvery, validationData) return self:Train(o, X, y, epochs, printEvery, validationData) end
    o.forward = function (X, training) return self:Forward(o, X, training) end
    o.backward = function (output, y) return self:Backward(o, output, y) end
-
+   return o
 end
 
 function Model:Add(self, layer)
@@ -41,7 +41,13 @@ function Model:Train(self, X, y, epochs, printEvery, validationData)
 end
 
 function Model:Forward(self, X, training)
-
+    self.inputLayer.forward(X)
+    local x_out = self.inputLayer.output
+    for layer in self.layers do
+        layer.forward(layer.prev.output)
+        x_out = layer.output
+    end
+    return x_out
 end
 
 function Model:Backward(self, output, y)

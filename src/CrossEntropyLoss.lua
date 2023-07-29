@@ -1,19 +1,19 @@
 
 CrossEntropyLoss = { y_pred = {}, y_true = {} }
 require('BaseLoss')
-require('Table')
+local table = require('Table')
 
 local matrix = require('Matrix')
 
 --Super method for calling parent constructor
-CrossEntropyLoss.Super = function (self, y_pred, y_true) return BaseLoss:new(self, y_pred, y_true) end
+CrossEntropyLoss.Super = function (self, y_pred, y_true) return BaseLoss:new(self) end
 
 -- Derived class method crossentropyloss
 function CrossEntropyLoss:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    o.forward = function (y_pred, y_true) return CrossEntropyLoss:Forward(o, y_pred, y_true) end
+    o.forward = function (y_pred, y_true) return self:Forward(o, y_pred, y_true) end
     o.backward = function (dvalues, y_true) return self:Backward(o, dvalues, y_true) end
     return self.Super(o)
 end

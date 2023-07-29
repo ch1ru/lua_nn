@@ -1,0 +1,11 @@
+local model = require('Model')
+require('DenseLayer')
+local Relu = require('Relu')
+
+local model = model:new()
+model.add(DenseLayer:new(1, 64))
+model.add(Relu:new())
+model.add(DenseLayer:new(64, 64))
+model.add(Relu:new())
+model.add(DenseLayer:new(64, 1))
+model.add(LinearActivation:new())

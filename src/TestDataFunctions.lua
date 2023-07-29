@@ -69,6 +69,17 @@ function ConvertPredsToCSV(inputs, output)
     return strData
 end
 
+function ConvertRegressPredsToCSV(inputs, output)
+    local strData = "inputx, inputy,\n"
+    for i = 1, #output do
+        strData = strData ..
+        inputs[i][1] .. ',' ..
+        output[i][1] .. ',\n'
+    end
+
+    return strData
+end
+
 function ConvertTrainingToCSV(epochs, acc, loss)
     local strData = "epoch, accuracy, loss,\n"
     for i = 1, #epochs do

@@ -357,6 +357,40 @@ function matrix.pow( m1, num )
 	return mtx
 end
 
+function matrix.addNum(m1, num)
+	local m2 = matrix(m1:rows(), m1:columns())
+    for i = 1, m1:rows() do
+        for j = 1, m1:columns() do
+            matrix.setelement(m2, i, j, m1[i][j] + num)
+        end
+    end
+	return m2
+end
+
+function matrix.subNum(m1, num)
+	local m2 = matrix(m1:rows(), m1:columns())
+    for i = 1, m1:rows() do
+        for j = 1, m1:columns() do
+            matrix.setelement(m2, i, j, m1[i][j] - num)
+        end
+    end
+	return m2
+end
+
+function matrix.powNum(m1, num)
+	local m2 = matrix(m1:rows(), m1:columns())
+    for i = 1, m1:rows() do
+        for j = 1, m1:columns() do
+			if num == 0.5 and m1[i][j] < 0 then
+				matrix.setelement(m2, i, j, 0)
+			else
+				matrix.setelement(m2, i, j, m1[i][j] ^ num)
+			end
+        end
+    end
+	return m2
+end
+
 local function number_norm2(x)
   return x * x
 end
@@ -374,7 +408,7 @@ end
 function matrix.det( m1 )
 
 	-- check if matrix is quadratic
-	assert(#m1 == #m1[1], "matrix not square")
+	--assert(#m1 == #m1[1], "matrix not square")
 	
 	local size = #m1
 	
@@ -589,7 +623,7 @@ end
 -- on success: returns inverted matrix
 -- on failure: returns nil,'rank of matrix'
 function matrix.invert( m1 )
-	assert(#m1 == #m1[1], "matrix not square")
+	--assert(#m1 == #m1[1], "matrix not square")
 	local mtx = matrix.copy( m1 )
 	local ident = setmetatable( {},matrix_meta )
 	local e = m1[1][1]
@@ -637,7 +671,7 @@ local function get_abs_avg( m1, m2 )
 end
 -- square root function
 function matrix.sqrt( m1, iters )
-	assert(#m1 == #m1[1], "matrix not square")
+	--assert(#m1 == #m1[1], "matrix not square")
 	local iters = iters or math.huge
 	local y = matrix.copy( m1 )
 	local z = matrix(#y, 'I')
@@ -660,6 +694,51 @@ function matrix.sqrt( m1, iters )
 	return y,z,get_abs_avg(matrix.mul(y,y),m1)
 end
 
+function matrix.sum(m1)
+	local sum = 0
+	for i = 1, m1:rows() do
+		for j = 1, m1:columns() do
+			sum = sum + m1[i][j]
+		end
+	end
+	return sum
+end
+
+function matrix.square(m1)
+	local m2 = matrix:new(m1:size())
+	for i = 1, m1:rows() do
+		for j = 1, m1:columns() do
+			matrix.setelement(m2, i, j, m1[i][j] * m1[i][j])
+		end
+	end
+	return m2
+end
+
+function matrix.abs(m1)
+	local m2 = matrix(m1:size())
+	for i = 1, #m1:rows() do
+		for j = 1, #m1:columns() do
+			matrix.setelement(m2, i, j, math.abs(m1[i][j]))
+		end
+	end
+	return m2
+end
+
+
+function matrix.divide(m1, m2) 
+	local m3 = matrix(m1:rows(), m1:columns())
+    for i = 1, m1:rows() do
+        for j = 1, m1:columns() do
+			if m2[i][j] == 0 then --avoid divide by 0 error
+				--matrix.setelement(m3, i, j, m1[i][j])
+			else
+				matrix.setelement(m3, i, j, m1[i][j] / m2[i][j])
+			end
+        end
+    end
+	return m3
+end
+
 --// matrix.root ( m1, root [,iters] )
 -- calculate any root of a matrix
 -- source: http://www.dm.unipi.it/~cortona04/slides/bruno.pdf
@@ -667,7 +746,7 @@ end
 -- conditions same as matrix.sqrt
 -- returns same values as matrix.sqrt
 function matrix.root( m1, root, iters )
-	assert(#m1 == #m1[1], "matrix not square")
+	--assert(#m1 == #m1[1], "matrix not square")
 	local iters = iters or math.huge
 	local mx = matrix.copy( m1 )
 	local my = matrix.mul(mx:invert(),mx:pow(root-1))

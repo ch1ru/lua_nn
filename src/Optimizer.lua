@@ -197,18 +197,23 @@ function Adam:UpdateParams(self, layer)
     layer.weightMomentums = matrix.mulnum(layer.weightMomentums, self.beta1) + matrix.mulnum(layer.dweights, (1 - self.beta1))
     layer.biasMomentums = matrix.mulnum(layer.biasMomentums, self.beta1) + matrix.mulnum(layer.dbiases, (1 - self.beta1))
 
-    local weight_momentums_corrected = matrix.divnum(layer.weightMomentums, math.pow(1 - self.beta1, self.iters + 1))
-    local bias_momentums_corrected = matrix.divnum(layer.biasMomentums, math.pow(1 - self.beta1, self.iters + 1))
+    local weight_momentums_corrected = matrix.divnum(layer.weightMomentums, 1 - self.beta1 ^ (self.iters + 1))
+    local bias_momentums_corrected = matrix.divnum(layer.biasMomentums, 1 - self.beta1 ^ (self.iters + 1))
 
-    layer.weightCache = matrix.mulnum(layer.weightCache, self.beta2) + matrix.mulnum(layer.dweights * layer.dweights, 1 - self.beta2)
-    layer.biasCache = matrix.mulnum(layer.biasCache, self.beta2) + matrix.mulnum(layer.dbiases * layer.dbiases, 1 - self.beta2)
+    layer.weightCache = matrix.mulnum(layer.weightCache, self.beta2) + matrix.mulnum(matrix.powNum(layer.dweights, 2), 1 - self.beta2)
+    layer.biasCache = matrix.mulnum(layer.biasCache, self.beta2) + matrix.mulnum(matrix.powNum(layer.dbiases, 2), 1 - self.beta2)
 
-    weight_momentums_corrected = matrix.divnum(layer.weightMomentums, math.pow(1 - self.beta2, self.iters + 1))
-    bias_momentums_corrected = matrix.divnum(layer.biasMomentums, math.pow(1 - self.beta2, self.iters + 1))
+    local weight_cache_corrected = matrix.divnum(layer.weightCache, 1 - self.beta2 ^ (self.iters + 1))
+    local bias_cache_corrected = matrix.divnum(layer.biasCache, 1 - self.beta2 ^ (self.iters + 1))
 
-    layer.weights = layer.weights + matrix.mulnum(weight_momentums_corrected, -self.currentlr) / (matrix.sqrt(weight_momentums_corrected) + self.epsilon)
-    layer.biases = layer.biases + matrix.mulnum(bias_momentums_corrected, -self.currentlr) / (matrix.sqrt(bias_momentums_corrected) + self.epsilon)
+    layer.weights = layer.weights + matrix.divide((matrix.mulnum(weight_momentums_corrected, -self.currentlr)), 
+        matrix.addNum(matrix.powNum(weight_cache_corrected, 0.5), self.epsilon))
+    layer.biases = layer.biases + matrix.divide((matrix.mulnum(bias_momentums_corrected, -self.currentlr)),
+        matrix.addNum(matrix.powNum(bias_cache_corrected, 0.5), self.epsilon))
+
+
 end
+
 
 function Adam:PostUpdateParams(self)
     self.iters = self.iters + 1

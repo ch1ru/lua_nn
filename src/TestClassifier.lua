@@ -11,9 +11,9 @@ require('Accuracy')
 local Optimizer = require('Optimizer')
 
 --layers
-local dense1 = DenseLayer:new(2, 64)
-local dense2 = DenseLayer:new(64, 64)
-local dense3 = DenseLayer:new(64, 4)
+local dense1 = DenseLayer:new(2, 64, 0, 5e-4, 0, 5e-4)
+local dense2 = DenseLayer:new(64, 64, 0, 5e-4, 0, 5e-4)
+local dense3 = DenseLayer:new(64, 4, 0, 5e-4, 0, 5e-4)
 
 --activation functions
 local activation1 = Relu:new()
@@ -69,7 +69,10 @@ for epoch = 1, 3000 do
 
         dense3.forward(activation2.output)
 
-        local loss = loss_activation.forward(dense3.output, y_test)
+        local data_loss = loss_activation.forward(dense3.output, y_test)
+        local reg_loss = loss_activation.loss.regularization_loss(dense1) + loss_activation.loss.regularization_loss(dense2) + loss_activation.loss.regularization_loss(dense3)
+        local loss = data_loss + reg_loss
+
         local acc = CalculateAcc(loss_activation.output, y_test)
 
         print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
