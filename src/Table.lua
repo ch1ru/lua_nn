@@ -445,12 +445,17 @@ function table.accept(t, criteria, ...)
 end
 
 function table.clip(t, lb, ub)
+   
    local new = {}
    for i = 1, #t do
       if type(t[i]) == 'table' then
          table.insert(new, table.clip(t[i], lb, ub))
       else
-         if t[i] > lb and t[i] < ub then
+         if t[i] < lb then
+            table.insert(new, lb)
+         elseif t[i] > ub then
+            table.insert(new, ub)
+         else
             table.insert(new, t[i])
          end
       end

@@ -14,6 +14,7 @@ function DenseLayer:new (n_inputs, n_neurons, weight_regularizer_l1, weight_regu
    o.n_inputs = n_inputs
    o.n_neurons = n_neurons
    o.weights = matrix:new(table.normal({n_inputs, n_neurons}, 0, 1, 0.01))
+   --o.weights = matrix:new({table.ones(n_inputs), table.ones(n_neurons)})
    o.biases = matrix:new({table.zeros(n_neurons)})
    o.weight_regularizer_l1 = weight_regularizer_l1 or 0.0
    o.weight_regularizer_l2 = weight_regularizer_l2 or 0.0

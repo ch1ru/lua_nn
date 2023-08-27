@@ -14,27 +14,9 @@ local MSE = require('MSELoss')
 local matrix = require('Matrix')
 local LinearActivation = require('LinearActivation')
 
---create a sine wave as our training data
-local X_train = table.arrange(0, 1, .001)
+local X_train, y_train = SinData(0, 1, .001)
 
-local y_train = {} --Input training coords
-local c = 0
-for _, v in ipairs(X_train) do
-  table.insert(y_train, math.sin(v * math.pi * 2))
-end
-
-for i=1, #X_train do
-  --print(X_train[i] .. ',' .. y_train[i])
-end
-
-X_train = matrix.transpose(matrix({X_train}))
-
-
-local acc_precision = Std(y_train) / 250
-
-y_train = matrix({y_train})
-
-
+local acc_precision = Std(y_train[1]) / 250
 
 local dense1 = DenseLayer:new(1, 64, 0, 5e-4, 0, 5e-4)
 local activation1 = Relu:new()
@@ -46,12 +28,13 @@ local dense3 = DenseLayer:new(64, 1)
 local activation3 = LinearActivation:new()
 
 local lossFn = MSE:new()
+lossFn.rememberTrainableLayers({dense1, dense2, dense3})
 
 local optimizer = Optimizer.Adam(0.01, 1e-3)
 
 
 
-for epoch = 1, 1000 do
+for epoch = 1, 100 do
   
   dense1.forward(matrix(X_train))
   activation1.forward(dense1.output)
@@ -78,7 +61,6 @@ for epoch = 1, 1000 do
   end
 
   lossFn.backward(activation3.output, matrix.transpose(y_train))
-
   activation3.backward(lossFn.dinputs)
   dense3.backward(activation3.dinputs)
   activation2.backward(dense3.dinputs)

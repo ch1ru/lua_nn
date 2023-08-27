@@ -253,6 +253,28 @@ function matrix.mul( m1, m2 )
 	return setmetatable( mtx, matrix_meta )
 end
 
+function matrix.log(mtx)
+	local mtx2 = matrix:new(mtx:rows(), mtx:columns())
+	for i = 1, mtx:rows() do
+		mtx2[i] = {}
+		for j = 1, mtx:columns() do
+			mtx2[i][j] = math.log(mtx[i][j])
+		end
+	end
+	return mtx2
+end
+
+--Subtract all values in a matrix from 1
+function matrix.OneMinus(mtx) 
+	local mtx2 = matrix:new(mtx:rows(), mtx:columns())
+	for i = 1, mtx:rows() do
+		for j = 1, mtx:columns() do
+			mtx2[i][j] = 1 - mtx[i][j]
+		end
+	end
+	return mtx2
+end
+
 function MatDivByRowOrCol(m1, m2)
     local mtx = {}
         for i = 1,#m1 do

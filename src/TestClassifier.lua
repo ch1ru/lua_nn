@@ -8,6 +8,7 @@ require('SoftmaxCrossEntropyLoss')
 require('BaseLoss')
 local Units = require('UnitTests')
 require('Accuracy')
+require('AccuracyClassifier')
 local Optimizer = require('Optimizer')
 
 --layers
@@ -19,10 +20,12 @@ local dense3 = DenseLayer:new(64, 4, 0, 5e-4, 0, 5e-4)
 local activation1 = Relu:new()
 local activation2 = Relu:new()
 local loss_activation = SoftmaxCrossEntropyLoss:new()
+loss_activation.loss.rememberTrainableLayers({dense1, dense2, dense3})
 local softmax = Softmax:new()
 
 --optimizer
 local optimizer = Optimizer.SGD(.01, 0.0005, 0.9)
+local accuracy = AccuracyClassifier:new()
 
 --generate training and test data
 local X_train, y_train = GenerateBullseye(2000)
@@ -49,7 +52,7 @@ for epoch = 1, 3000 do
     local loss = loss_activation.forward(dense3.output, y_train)
     table.insert(loss_tracker, loss)
 
-    local acc = CalculateAcc(loss_activation.output, y_train)
+    local acc = accuracy.calculate(loss_activation.output, y_train)
     table.insert(acc_tracker, acc)
 
     if epoch % 5 == 0 then
@@ -73,7 +76,7 @@ for epoch = 1, 3000 do
         local reg_loss = loss_activation.loss.regularization_loss(dense1) + loss_activation.loss.regularization_loss(dense2) + loss_activation.loss.regularization_loss(dense3)
         local loss = data_loss + reg_loss
 
-        local acc = CalculateAcc(loss_activation.output, y_test)
+        local acc = accuracy.calculate(loss_activation.output, y_test)
 
         print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
 

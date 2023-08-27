@@ -1,4 +1,5 @@
 local matrix = require('Matrix')
+local table = require('Table')
 
 function GenerateBullseye(n)
     --create 2 circles 1 in the other
@@ -40,6 +41,42 @@ function GenerateBullseye(n)
     end
 
     
+
+    return matrix(X), matrix({y})
+end
+
+function GenerateBinaryClasses(n)
+    --first generate random points between -15 and 15
+    X = {}
+
+    for i = 1, n do
+        local signx, signy
+        local randx = math.random()
+        local randy = math.random()
+        if randx < 0.5 then
+        signx = -1
+        else
+        signx = 1
+        end
+
+        if randy < 0.5 then
+        signy = -1
+        else
+        signy = 1
+        end
+        table.insert(X, {math.random() * 15 * signx, math.random() * 15 * signy})
+    end
+
+    --next, classify points
+    local y = {}
+    for _, v in ipairs(X) do
+        local squares = v[2] * v[2] + v[1] * v[1]
+        if squares < 115 then
+        table.insert(y, 1)
+        else
+        table.insert(y, 0)
+        end
+    end
 
     return matrix(X), matrix({y})
 end
@@ -95,3 +132,19 @@ function SaveData ( filename, data )
     file:write(data)
     file:close()
  end 
+
+ function SinData (start, stop, step)
+    --create a sine wave as our training data
+    local X_train = table.arrange(start, stop, step)
+
+    local y_train = {} --Input training coords
+    local c = 0
+    for _, v in ipairs(X_train) do
+    table.insert(y_train, math.sin(v * math.pi * 2))
+    end
+
+    X_train = matrix.transpose(matrix({X_train}))
+    y_train = matrix({y_train})
+
+    return X_train, y_train
+ end

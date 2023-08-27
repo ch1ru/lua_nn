@@ -14,16 +14,27 @@ function Sigmoid:new(o)
 end
 
 function Sigmoid:Forward(self, x)
-    local t = {}
-    for _, v in ipairs(x) do
-        table.insert(t, 1 / 1 + math.exp(-v))
+    local m3 = matrix:new({x:rows(), x:columns()})
+    self.inputs = x
+    for i = 1, x:rows() do
+        m3[i] = {}
+        for j = 1, x:columns() do
+            m3[i][j] = 1 / (1 + math.exp(x[i][j]))
+        end
     end
-    self.output = matrix(t)
+    self.output = m3
     return self.output
 end
 
 function Sigmoid:Backward(self, dvalues)
-
+    local output_one_minus = matrix({self.output:rows(), self.output:columns()})
+    for i = 1, self.output:rows() do
+        output_one_minus[i] = {}
+        for j = 1, self.output:columns() do
+            output_one_minus[i][j] = 1 - self.output[i][j]
+        end
+    end
+    self.dinputs = dvalues * output_one_minus * self.output
 end
 
 return Sigmoid

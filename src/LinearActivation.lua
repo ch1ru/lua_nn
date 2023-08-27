@@ -5,6 +5,7 @@ function LinearActivation:new()
     setmetatable(o, self)
     o.forward = function (x) return self:Forward(o, x) end
     o.backward = function (dvalues) return self:Backward(o, dvalues) end
+    o.predictions = function (outputs) return self:Predictions(o, outputs) end
     return o
 end
 
@@ -15,6 +16,10 @@ end
 
 function LinearActivation:Backward(self, dvalues)
     self.dinputs = dvalues
+end
+
+function LinearActivation:Predictions(self, outputs)
+    return outputs
 end
 
 return LinearActivation

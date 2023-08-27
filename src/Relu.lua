@@ -9,6 +9,7 @@ function ReLU:new(o)
   setmetatable(o, self)
   o.forward = function (x) return self:Forward(o, x) end
   o.backward = function (dvalues) return self:Backward(o, dvalues) end
+  o.predictions = function (outputs) return self:Predictions(o, outputs) end
   return o
 end
 
@@ -40,6 +41,10 @@ function ReLU:Backward(self, dvalues)
     end
   end
   return self.dinputs
+end
+
+function ReLU:Predictions(self, outputs)
+  return outputs
 end
 
 return ReLU
