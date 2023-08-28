@@ -169,7 +169,7 @@ function Adam:new (learningRate, decay, epsilon, beta1, beta2)
    o.currentlr = o.lr
    o.decay = decay or 0
    o.iters = 0
-   o.epsilon = epsilon or 0
+   o.epsilon = epsilon or 1e-7
    o.beta1 = beta1 or 0.9
    o.beta2 = beta2 or 0.999
    --functions

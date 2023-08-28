@@ -10,8 +10,7 @@ local Optimizer = require('Optimizer')
 local Sigmoid = require('Sigmoid')
 local BinaryCrossEntropyLoss = require('BinaryCrossEntropyLoss')
 local table = require('table')
-local X, y = GenerateBinaryClasses(50)
---print(X)
+local X, y = GenerateBinaryClasses(100)
 
 local dense1 = DenseLayer:new(2, 64)
 local activation1 = Relu:new()
@@ -20,15 +19,16 @@ local activation2 = Sigmoid:new()
 local loss_fn = BinaryCrossEntropyLoss:new()
 local optimizer = Adam:new(0.001, 5e-7)
 
-for epoch = 1, 1000 do
+for epoch = 1, 2000 do
     dense1.forward(X)
     activation1.forward(dense1.output) 
     dense2.forward(activation1.output)
     activation2.forward(dense2.output)
-    local data_loss = loss_fn.calculate(activation2.output, y)
+    local data_loss, _ = loss_fn.calculate(activation2.output, y)
+    
     local loss = data_loss
     local acc = 0.0
-    if epoch % 1 == 0 then
+    if epoch % 10 == 0 then
         print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, optimizer.currentlr))
     end
 

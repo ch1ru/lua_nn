@@ -18,7 +18,7 @@ end
 
 function BinaryCrossEntropyLoss:Forward(self, y_pred, y_true)
     --Weight samples to not affect the mean too much
-    local y_pred_clipped = table.clip(y_pred, math.exp(-7), 1 - math.exp(-7))
+    local y_pred_clipped = table.clip(y_pred, 1e-7, 1 - 1e-7)
     local y_true_one_minus = {}
     local y_pred_clipped_one_minus = {}
     local alpha = {}
@@ -39,7 +39,7 @@ function BinaryCrossEntropyLoss:Forward(self, y_pred, y_true)
     for i = 1, #alpha do
         table.insert(sample_losses, alpha[i] + beta[i])
     end
-
+    
     return table.makeNegative(sample_losses)
     
 end
@@ -77,8 +77,6 @@ function BinaryCrossEntropyLoss:Backward(self, dvalues, y_true)
     
     
     self.dinputs = matrix.transpose(matrix:new({dinputs_samples}))
-
-    print(self.dinputs:size())
 end
 
 return BinaryCrossEntropyLoss

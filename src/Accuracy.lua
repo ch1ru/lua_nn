@@ -16,7 +16,9 @@ function Accuracy:Calculate(self, preds, y_true)
 
     local comparisons = self.compare(preds, y_true)
 
-    return comparisons
+    local accuracy = table.avg(comparisons)
+
+    return accuracy
     
 end
 

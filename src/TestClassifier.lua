@@ -8,7 +8,7 @@ require('SoftmaxCrossEntropyLoss')
 require('BaseLoss')
 local Units = require('UnitTests')
 require('Accuracy')
-require('AccuracyClassifier')
+require('AccuracyCategorical')
 local Optimizer = require('Optimizer')
 
 --layers
@@ -25,7 +25,7 @@ local softmax = Softmax:new()
 
 --optimizer
 local optimizer = Optimizer.SGD(.01, 0.0005, 0.9)
-local accuracy = AccuracyClassifier:new()
+local accuracy = AccuracyCategorical:new()
 
 --generate training and test data
 local X_train, y_train = GenerateBullseye(2000)

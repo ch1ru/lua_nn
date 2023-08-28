@@ -10,6 +10,7 @@ function Sigmoid:new(o)
     setmetatable(o, self)
     o.forward = function (x) return self:Forward(o, x) end
     o.backward = function (dvalues) return self:Backward(o, dvalues) end
+    o.predictions = function(outputs) return self:Predictions(o, outputs) end
     return o
 end
 
@@ -19,7 +20,7 @@ function Sigmoid:Forward(self, x)
     for i = 1, x:rows() do
         m3[i] = {}
         for j = 1, x:columns() do
-            m3[i][j] = 1 / (1 + math.exp(x[i][j]))
+            m3[i][j] = 1 / (1 + math.exp(-x[i][j]))
         end
     end
     self.output = m3
@@ -35,6 +36,19 @@ function Sigmoid:Backward(self, dvalues)
         end
     end
     self.dinputs = dvalues * output_one_minus * self.output
+end
+
+function Sigmoid:Predictions(self, outputs) 
+    local preds = {}
+    for i = 1, outputs:rows() do
+        for j = 1, outputs:columns() do
+            if outputs[i][j] > 0.5 then
+                table.insert(preds, 1)
+            else
+                table.insert(preds, 0)
+            end
+        end
+    end
 end
 
 return Sigmoid

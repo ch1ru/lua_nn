@@ -21,12 +21,13 @@ function BaseLoss:Calculate(self, output, y)
    y = y or self.y
 
    local sample_losses = self.forward(output, y)
-   --DONT FORGET TO RE ADD THIS!!!!
-   return table.avg(sample_losses)--, self.regularization_loss()
+
+   return table.avg(sample_losses), self.regularization_loss()
 end
 
 function BaseLoss:RegularizationLoss(self)
    local reg_loss = 0
+   if self.trainableLayers == nil then return 0 end
 
    for i = 1, #self.trainableLayers do
       local layer = self.trainableLayers[i]
