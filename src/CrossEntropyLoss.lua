@@ -13,6 +13,7 @@ function CrossEntropyLoss:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
+    o.name = "crossentropy_loss"
     o.forward = function (y_pred, y_true) return self:Forward(o, y_pred, y_true) end
     o.backward = function (dvalues, y_true) return self:Backward(o, dvalues, y_true) end
     return self.Super(o)

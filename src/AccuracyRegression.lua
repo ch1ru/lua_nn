@@ -9,6 +9,7 @@ function AccuracyRegression:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
+    o.name = "accuracy_regression"
     o.precision = nil
     --functions
     o.compare = function (preds, y_true) return self:Compare(o, preds, y_true) end

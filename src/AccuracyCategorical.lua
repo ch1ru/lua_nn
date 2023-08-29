@@ -9,6 +9,7 @@ function AccuracyCategorical:new(binary)
     local o = {}
     setmetatable(o, self)
     self.__index = self
+    o.name = "accuracy_categorical"
     o.binary = binary
     --functions
     o.compare = function (preds, y_true) return self:Compare(o, preds, y_true) end
@@ -25,8 +26,11 @@ function AccuracyCategorical:Compare(self, preds, y_true)
     local pred_true = {}
 
     --multiclass predictions
-    if not self.binary and #y_true[1][1] == 2 then
-        --IMPLEMENT
+    --do argmax if binary and contains multiple preds (softmax)
+    if not self.binary and type(preds[1]) == 'table' then
+        for i = 1, #preds do
+            preds[i] = table.max(preds[i])[1]
+        end
     end
 
     --binary predictions
@@ -40,8 +44,6 @@ function AccuracyCategorical:Compare(self, preds, y_true)
 
     
     return pred_true
-
-
 end
 
 return AccuracyCategorical

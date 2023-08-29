@@ -12,6 +12,7 @@ SGD = {}
 function SGD:new (learningRate, decay, momentum)
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "optim_sgd"
    o.lr = learningRate or 0.01
    o.currentlr = o.lr
    o.decay = decay or 0
@@ -68,6 +69,7 @@ Adagrad = {}
 function Adagrad:new (learningRate, decay, epsilon)
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "optim_adagrad"
    o.lr = learningRate or 0.01
    o.currentlr = o.lr
    o.decay = decay or 0
@@ -116,6 +118,7 @@ RMSProp = {}
 function RMSProp:new (learningRate, decay, epsilon, rho)
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "optim_rmsprop"
    o.lr = learningRate or 0.01
    o.currentlr = o.lr
    o.decay = decay or 0
@@ -165,6 +168,7 @@ Adam = {}
 function Adam:new (learningRate, decay, epsilon, beta1, beta2)
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "optim_adam"
    o.lr = learningRate or 0.01
    o.currentlr = o.lr
    o.decay = decay or 0

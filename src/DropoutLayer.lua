@@ -6,11 +6,12 @@ require('CrossEntropyLoss')
 local matrix = require 'Matrix'
 local table = require "Table"
 
-Dropout = {}
+DropoutLayer = {}
 
-function Dropout:new(rate)
+function DropoutLayer:new(rate)
     local o = {}
     setmetatable(o, {__index = self})
+    o.name = "dropout_layer"
     o.rate = 1- rate
     --functions
     o.forward = function (inputs, training) return self:Forward(o, inputs, training) end
@@ -18,7 +19,7 @@ function Dropout:new(rate)
     return o
 end
 
-function Dropout:Forward(self, inputs, training) 
+function DropoutLayer:Forward(self, inputs, training) 
     self.inputs = inputs
 
     if not training then
@@ -31,8 +32,8 @@ function Dropout:Forward(self, inputs, training)
     self.output = inputs * self.binary_mask
 end
 
-function Dropout:Backward(self, dvalues)
+function DropoutLayer:Backward(self, dvalues)
     self.dinputs = dvalues * self.binary_mask
 end
 
-return Dropout
+return DropoutLayer

@@ -9,6 +9,7 @@ local matrix = require('Matrix')
 function SoftmaxCrossEntropyLoss:new(o)
     o = o or {}
     setmetatable(o, self)
+    o.name = "softmax_crossentropy_loss"
     o.activation = Softmax:new()
     o.loss = CrossEntropyLoss:new()
     o.forward = function (inputs, y_true) return self:Forward(o, inputs, y_true) end

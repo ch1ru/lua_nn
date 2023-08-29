@@ -7,6 +7,7 @@ local ReLU = {}
 function ReLU:new(o)
   o = o or {}
   setmetatable(o, self)
+  o.name = "relu"
   o.forward = function (x) return self:Forward(o, x) end
   o.backward = function (dvalues) return self:Backward(o, dvalues) end
   o.predictions = function (outputs) return self:Predictions(o, outputs) end

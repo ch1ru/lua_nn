@@ -16,6 +16,7 @@ local Softmax = {}
 function Softmax:new(o)
     o = o or {}
     setmetatable(o, self)
+    o.name = "softmax"
     o.forward = function (x) return self:Forward(o, x) end
     o.backward = function (dvalues) return self:Backward(o, dvalues) end
     o.predictions = function (outputs, classNames) return self:Predictions(o, outputs, classNames) end 

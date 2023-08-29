@@ -8,6 +8,7 @@ local Sigmoid = {}
 function Sigmoid:new(o)
     o = o or {}
     setmetatable(o, self)
+    o.name = "sigmoid"
     o.forward = function (x) return self:Forward(o, x) end
     o.backward = function (dvalues) return self:Backward(o, dvalues) end
     o.predictions = function(outputs) return self:Predictions(o, outputs) end

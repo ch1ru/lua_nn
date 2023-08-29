@@ -11,6 +11,7 @@ DenseLayer = {}
 function DenseLayer:new (n_inputs, n_neurons, weight_regularizer_l1, weight_regularizer_l2, bias_regularizer_l1, bias_regularizer_l2)
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "dense_layer"
    o.n_inputs = n_inputs
    o.n_neurons = n_neurons
    o.weights = matrix:new(table.normal({n_inputs, n_neurons}, 0, 1, 0.01))

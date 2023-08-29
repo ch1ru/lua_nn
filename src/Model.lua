@@ -3,6 +3,7 @@ require('Relu')
 require('BaseLoss')
 require('CrossEntropyLoss')
 require('InputLayer')
+require('SoftmaxCrossEntropyLoss')
 
 local matrix = require 'Matrix'
 local table = require "Table"
@@ -12,6 +13,7 @@ Model = {}
 function Model:new ()
    local o = {}
    setmetatable(o, {__index = self})
+   o.name = "model"
    o.layers = {}
    --class functions
    o.add = function (layer) return self:Add(o, layer) end
@@ -59,6 +61,11 @@ function Model:Finalize(self)
     end
 
     self.loss.rememberTrainableLayers(self.trainableLayers)
+
+    if self.layers[#self.layers].name == "softmax"
+        and self.loss.name == "crossentropy_loss" then
+            self.softmax_classifier_output = SoftmaxCrossEntropyLoss:new()
+    end
 end
 
 function Model:Train(self, X, y, epochs, printEvery, validationData)
@@ -109,8 +116,25 @@ end
 
 function Model:Backward(self, output, y)
 
+    if self.softmax_classifier_output ~= nil then
+        --calls backward on condensed softmax/cross entropy function
+
+        self.softmax_classifier_output.backward(output, y)
+
+        self.layers[#self.layers].dinputs = self.softmax_classifier_output.dinputs
+
+        --backpropogate through all layers but last
+        for i = #self.layers - 1, 1, -1 do
+            local layer = self.layers[i]
+            layer.backward(layer.next.dinputs)
+        end
+
+        return
+    end
+
     self.loss.backward(output, y)
 
+    --backpropogate through all layers
     for i = #self.layers, 1, -1 do
         local layer = self.layers[i]
         layer.backward(layer.next.dinputs)
