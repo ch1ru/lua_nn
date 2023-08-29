@@ -48,8 +48,6 @@ function BinaryCrossEntropyLoss:Backward(self, dvalues, y_true)
     local samples = dvalues:rows()
     local outputs = dvalues:columns()
     local dvalues_clipped = table.clip(dvalues, math.exp(-7), 1 - math.exp(-7))
-    local y_true_one_minus = {}
-    local clipped_dvalues_one_minus = {}
 
     local alpha = {}
     local beta = {}

@@ -22,28 +22,26 @@ end
 
 function AccuracyCategorical:Compare(self, preds, y_true)
 
-    -- local pred_t = {}
+    local pred_true = {}
 
-    -- for i = 1, #preds do
-    --     for j = 1, #preds[i] do
-    --         if table.max(preds[i])[1] == preds[i][j] then
-    --             table.insert(pred_t, j-1)
-    --         end
-    --     end
-    -- end
+    --multiclass predictions
+    if not self.binary and #y_true[1][1] == 2 then
+        --IMPLEMENT
+    end
 
-    -- local correct_counter = 0
-    -- for i = 1, #y_true[1] do
-    --     if y_true[1][i] == pred_t[i] then
-    --         correct_counter = correct_counter + 1
-    --     end
-    -- end
+    --binary predictions
+    for i = 1, #preds do
+        if preds[i] == y_true[1][i] then
+            table.insert(pred_true, 1)
+        else
+            table.insert(pred_true, 0)
+        end
+    end
 
-    -- local mean = correct_counter / #y_true[1]
+    
+    return pred_true
 
-    -- return mean
 
-    return {0.0}
 end
 
 return AccuracyCategorical

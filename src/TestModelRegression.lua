@@ -6,6 +6,7 @@ require('TestDataFunctions')
 local LinearActivation = require('LinearActivation')
 local MSE = require('MSELoss')
 local Optimizer = require('Optimizer')
+local matrix = require('Matrix')
 
 local X_train, y_train = SinData(0, 1, .001)
 

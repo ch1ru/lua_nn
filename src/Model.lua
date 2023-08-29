@@ -68,10 +68,15 @@ function Model:Train(self, X, y, epochs, printEvery, validationData)
     for epoch = 1, epochs do
         local output = self.forward(X)
 
+        
+
         local data_loss, regularization_loss = self.loss.calculate(output, y)
         local loss = data_loss + regularization_loss
 
+        
+
         local preds = self.output_layer_activation.predictions(output)
+
         local acc = self.accuracy.calculate(preds, y)
 
         self.backward(output, y)
@@ -85,7 +90,6 @@ function Model:Train(self, X, y, epochs, printEvery, validationData)
 
         --output summary
         if epoch % printEvery == 0 then
-            acc = 0.0
             print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, self.optimizer.currentlr))
             --SaveData('./TrainResults/output.csv', ConvertRegressPredsToCSV(matrix(X), matrix(y)))
         end
@@ -104,7 +108,8 @@ function Model:Forward(self, X, training)
 end
 
 function Model:Backward(self, output, y)
-    self.loss.backward(output, matrix.transpose(y))
+
+    self.loss.backward(output, y)
 
     for i = #self.layers, 1, -1 do
         local layer = self.layers[i]

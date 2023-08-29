@@ -49,6 +49,7 @@ function Sigmoid:Predictions(self, outputs)
             end
         end
     end
+    return preds
 end
 
 return Sigmoid

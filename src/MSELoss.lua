@@ -39,6 +39,7 @@ end
 function MSE:Backward(self, dvalues, y_true)
     local samples = dvalues:columns() * dvalues:rows()
     local outputs = dvalues:columns()
+    y_true = matrix.transpose(y_true)
     self.dinputs = matrix.divnum(
         matrix.mulnum((y_true - dvalues), -2), outputs)
     self.dinputs = matrix.divnum(self.dinputs, samples)
