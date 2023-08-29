@@ -16,9 +16,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 Windows:
 
-Get executable(https://win.rustup.rs)
+Get [executable](https://win.rustup.rs)
 
-Or if you would rather follow installation guide from the rust book[https://doc.rust-lang.org/cargo/getting-started/installation.html]
+Or if you would rather follow installation guide from the rust [book](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
 ### 2. Install Rojo
 
