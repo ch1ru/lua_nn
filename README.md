@@ -1,9 +1,7 @@
 # Lua_nn 🧞‍♀️🎮
 A Simple neural network library in lua.
 
-## Getting started
-
-## Roblox
+## Getting started with Roblox
 
 The easiest way to get started is using Rojo plugin. This can be install using cargo package manager.
 
