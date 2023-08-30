@@ -72,8 +72,6 @@ function BinaryCrossEntropyLoss:Backward(self, dvalues, y_true)
     for i = 1, #dinputs do
         table.insert(dinputs_samples, dinputs[i] / samples)
     end
-
-    
     
     self.dinputs = matrix.transpose(matrix:new({dinputs_samples}))
 end

@@ -3,12 +3,17 @@ require('DenseLayer')
 require('AccuracyRegression')
 local Relu = require('Relu')
 require('TestDataFunctions')
+require('DataLoader')
 local LinearActivation = require('LinearActivation')
 local MSE = require('MSELoss')
 local Optimizer = require('Optimizer')
 local matrix = require('Matrix')
 
 local X_train, y_train = SinData(0, 1, .001)
+local X_val, y_val = SinData(1, 2, 0.01)
+
+local train_dl = DataLoader:new(X_train, y_train, 100)
+local val_dl = DataLoader:new(X_val, y_val)
 
 local model = model:new()
 model.add(DenseLayer:new(1, 64))
@@ -25,4 +30,4 @@ model.set(
 
 model.finalize()
 
-model.train(X_train, y_train, 1000, 5, nil)
+model.train(train_dl, 1000, 5, nil)

@@ -4,6 +4,7 @@ require('BaseLoss')
 require('CrossEntropyLoss')
 require('InputLayer')
 require('SoftmaxCrossEntropyLoss')
+local Dataloader = require('DataLoader')
 
 local matrix = require 'Matrix'
 local table = require "Table"
@@ -19,7 +20,7 @@ function Model:new ()
    o.add = function (layer) return self:Add(o, layer) end
    o.set = function (loss, optimizer, accuracy) return self:Set(o, loss, optimizer, accuracy) end
    o.finalize = function () return self:Finalize(o) end
-   o.train = function (X, y, epochs, printEvery, validationData) return self:Train(o, X, y, epochs, printEvery, validationData) end
+   o.train = function (dataloader, epochs, printEvery, validationData) return self:Train(o, dataloader, epochs, printEvery, validationData) end
    o.forward = function (X, training) return self:Forward(o, X, training) end
    o.backward = function (output, y) return self:Backward(o, output, y) end
    return o
@@ -68,32 +69,48 @@ function Model:Finalize(self)
     end
 end
 
-function Model:Train(self, X, y, epochs, printEvery, validationData)
-    
-    self.accuracy.init(y)
+function Model:Train(self, dataloader, epochs, printEvery)
     
     for epoch = 1, epochs do
-        local output = self.forward(X)
 
-        
+        local X_batches, y_batches = dataloader.get_batch()
 
-        local data_loss, regularization_loss = self.loss.calculate(output, y)
-        local loss = data_loss + regularization_loss
+        local accuracy_epoch = {}
+        local loss_epoch = {}
 
-        
+        --cycle through batches
+        for i = 1, #y_batches do 
 
-        local preds = self.output_layer_activation.predictions(output)
+                local X = X_batches[i]
+                local y = y_batches[i]
 
-        local acc = self.accuracy.calculate(preds, y)
+                self.accuracy.init(y)
 
-        self.backward(output, y)
+                local output = self.forward(X)
 
-        self.optimizer.PreUpdateParams()
-        for i = 1, #self.trainableLayers do
-            local layer = self.trainableLayers[i]
-            self.optimizer.UpdateParams(layer)
+                local data_loss, regularization_loss = self.loss.calculate(output, y)
+                local loss = data_loss + regularization_loss
+                table.insert(loss_epoch, loss)
+
+                local preds = self.output_layer_activation.predictions(output)
+
+                local acc = self.accuracy.calculate(preds, y)
+                table.insert(accuracy_epoch, acc)
+
+                self.backward(output, y)
+
+                self.optimizer.PreUpdateParams()
+                for i = 1, #self.trainableLayers do
+                    local layer = self.trainableLayers[i]
+                    self.optimizer.UpdateParams(layer)
+                end
+                self.optimizer.PostUpdateParams()
+
+                
         end
-        self.optimizer.PostUpdateParams()
+
+        local loss = table.avg(loss_epoch)
+        local acc = table.avg(accuracy_epoch)
 
         --output summary
         if epoch % printEvery == 0 then

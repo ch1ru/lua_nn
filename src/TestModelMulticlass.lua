@@ -7,9 +7,13 @@ local Sigmoid = require('Sigmoid')
 local BinaryCrossEntropyLoss = require('BinaryCrossEntropyLoss')
 local AccuracyCategorical = require('AccuracyCategorical')
 local Softmax = require('Softmax')
+require('DataLoader')
 
 local X_train, y_train = GenerateBullseye(100)
 local X_val, y_val = GenerateBullseye(20)
+
+local train_dl = DataLoader:new(X_train, y_train, 20)
+local val_dl = DataLoader:new(X_val, y_val)
 
 local model = model:new()
 
@@ -28,7 +32,7 @@ model.set(
 
 model.finalize()
 
-model.train(X_train, y_train, 1000, 5, {X_val, y_val})
+model.train(train_dl, 1000, 5)
 
 
 
