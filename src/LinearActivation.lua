@@ -20,7 +20,13 @@ function LinearActivation:Backward(self, dvalues)
 end
 
 function LinearActivation:Predictions(self, outputs)
-    return outputs
+    local preds_t = {}
+    for i = 1, outputs:rows() do
+        for j = 1, outputs:columns() do
+            table.insert(preds_t, outputs[i][j])
+        end
+    end
+    return preds_t
 end
 
 return LinearActivation

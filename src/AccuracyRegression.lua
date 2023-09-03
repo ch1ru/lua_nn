@@ -27,16 +27,18 @@ function AccuracyRegression:Compare(self, preds, y_true)
 
     local preds_correct = {}
 
-    for i = 1, #preds do
-        local diff = preds[i][1] - y_true[1][i]
-        if math.abs(diff) < self.precision then
-            table.insert(preds_correct, 1)
-        else
-            table.insert(preds_correct, 0)
-        end
-    end
+    return {0.0}
+
+    -- for i = 1, #preds do
+    --     local diff = preds[i][1] - y_true[1][i]
+    --     if math.abs(diff) < self.precision then
+    --         table.insert(preds_correct, 1)
+    --     else
+    --         table.insert(preds_correct, 0)
+    --     end
+    -- end
     
-    return preds_correct
+    -- return preds_correct
 end
 
 return AccuracyRegression

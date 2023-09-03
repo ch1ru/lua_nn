@@ -8,10 +8,10 @@ local BinaryCrossEntropyLoss = require('BinaryCrossEntropyLoss')
 local AccuracyCategorical = require('AccuracyCategorical')
 local DataLoader = require('DataLoader')
 
-local X_train, y_train = GenerateBinaryClasses(80)
+local X_train, y_train = GenerateBinaryClasses(500)
 local X_val, y_val = GenerateBinaryClasses(2)
 
-local train_dl = DataLoader:new(X_train, y_train, 20)
+local train_dl = DataLoader:new(X_train, y_train)
 local val_dl = DataLoader:new(X_val, y_val)
 
 
@@ -25,11 +25,9 @@ model.add(Sigmoid:new())
 
 model.set(
     BinaryCrossEntropyLoss:new(),
-    Optimizer.Adam(0.005, 1e-3),
+    Optimizer.Adam(0.005, 1e-7),
     AccuracyCategorical:new(true)
 )
-
-
 
 model.finalize()
 

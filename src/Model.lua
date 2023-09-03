@@ -20,7 +20,7 @@ function Model:new ()
    o.add = function (layer) return self:Add(o, layer) end
    o.set = function (loss, optimizer, accuracy) return self:Set(o, loss, optimizer, accuracy) end
    o.finalize = function () return self:Finalize(o) end
-   o.train = function (dataloader, epochs, printEvery, validationData) return self:Train(o, dataloader, epochs, printEvery, validationData) end
+   o.train = function (dataloader, epochs, printEvery) return self:Train(o, dataloader, epochs, printEvery) end
    o.forward = function (X, training) return self:Forward(o, X, training) end
    o.backward = function (output, y) return self:Backward(o, output, y) end
    return o
@@ -104,7 +104,10 @@ function Model:Train(self, dataloader, epochs, printEvery)
                     local layer = self.trainableLayers[i]
                     self.optimizer.UpdateParams(layer)
                 end
+
                 self.optimizer.PostUpdateParams()
+              
+                SaveData('./TrainResults/output.csv', ConvertPredsToCSV(matrix(X), preds))
 
                 
         end
@@ -115,7 +118,7 @@ function Model:Train(self, dataloader, epochs, printEvery)
         --output summary
         if epoch % printEvery == 0 then
             print(string.format("Epoch: %d, Acc: %f, Loss: %f, learning rate: %f", epoch, acc, loss, self.optimizer.currentlr))
-            --SaveData('./TrainResults/output.csv', ConvertRegressPredsToCSV(matrix(X), matrix(y)))
+            
         end
     end
 end

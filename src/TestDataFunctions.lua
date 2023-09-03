@@ -95,23 +95,13 @@ function Numpy_format(X, y)
 end
 
 function ConvertPredsToCSV(inputs, output)
-    local strData = "inputx, inputy, prediction,\n"
+    local strData = ""
     for i = 1, #output do
+        for j = 1, #inputs[i] do
+            strData = strData .. inputs[i][j] .. ','
+        end
         strData = strData ..
-        inputs[i][1] .. ',' ..
-        inputs[i][2] .. ',' .. 
         output[i] .. ',\n'
-    end
-
-    return strData
-end
-
-function ConvertRegressPredsToCSV(inputs, output)
-    local strData = "inputx, inputy,\n"
-    for i = 1, #output do
-        strData = strData ..
-        inputs[i][1] .. ',' ..
-        output[i][1] .. ',\n'
     end
 
     return strData
